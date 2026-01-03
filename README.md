@@ -22,6 +22,8 @@ Official website for Nexoral Systems - an open-source technology organization bu
 app/
 ├── layout.tsx              # Root layout with metadata
 ├── page.tsx                # Home page with hero, stats, and featured projects
+├── robots.ts               # robots.txt generator
+├── sitemap.ts              # sitemap.xml generator
 ├── projects/
 │   ├── page.tsx           # All projects listing
 │   └── [slug]/
@@ -132,6 +134,21 @@ export const metadata: Metadata = {
   // ... OpenGraph, Twitter cards, etc.
 }
 ```
+
+### SEO Files
+
+#### Robots.txt (`app/robots.ts`)
+Automatically generates `/robots.txt` with crawling rules:
+- Allows all pages except `/api/`, `/_next/`, `/static/`
+- Links to sitemap.xml
+
+#### Sitemap (`app/sitemap.ts`)
+Dynamically generates `/sitemap.xml` with all pages:
+- Home page (priority: 1.0)
+- Projects listing (priority: 0.9)
+- Individual project pages (priority: 0.8)
+- Founder page (priority: 0.8)
+- Automatic last modified dates
 
 ### Dynamic Routes
 Project slugs are pre-generated for optimal performance:
