@@ -178,6 +178,40 @@ export async function getAllProjectSlugs(): Promise<string[]> {
 }
 
 /**
+ * Get organization statistics
+ * Calculates total projects, total stars, and MIT license percentage
+ */
+export async function getOrganizationStats() {
+  try {
+    const allProjects = await getAllProjects();
+
+    const totalProjects = allProjects.length;
+    const totalStars = allProjects.reduce((sum, project) => sum + (project.stars || 0), 0);
+
+    // Count MIT licensed projects
+    const mitLicensedCount = allProjects.filter(
+      (project) => project.license && project.license.toLowerCase().includes('mit')
+    ).length;
+    const mitLicensedPercentage =
+      totalProjects > 0 ? Math.round((mitLicensedCount / totalProjects) * 100) : 0;
+
+    return {
+      totalProjects,
+      totalStars,
+      mitLicensedPercentage,
+    };
+  } catch (error) {
+    console.error('Error calculating organization stats:', error);
+    // Return safe defaults
+    return {
+      totalProjects: 0,
+      totalStars: 0,
+      mitLicensedPercentage: 0,
+    };
+  }
+}
+
+/**
  * Prefetch and cache all project data
  * Useful for build time to warm up the cache
  */
