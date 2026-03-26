@@ -1,8 +1,50 @@
 /* eslint-disable react/jsx-no-comment-textnodes */
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import { getProjectBySlug, getAllProjectSlugs } from "@/lib/github/fetchers";
 
-const projectsData = {
+// ISR: Revalidate every 12 hours
+export const revalidate = 43200;
+
+// Enable dynamic params for new repos added after build
+export const dynamicParams = true;
+
+// Generate metadata for SEO
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const project = await getProjectBySlug(slug);
+
+  if (!project) {
+    return {
+      title: 'Project Not Found | Nexoral Systems',
+      description: 'The requested project could not be found.',
+    };
+  }
+
+  return {
+    title: `${project.name} - ${project.description.substring(0, 100)} | Nexoral Systems`,
+    description: project.longDescription || project.description,
+    keywords: [project.name, ...project.topics, project.language || '', 'open source', 'Nexoral', 'GitHub'].filter(Boolean),
+    authors: [{ name: 'Ankan Saha', url: 'https://github.com/AnkanSaha' }],
+    openGraph: {
+      type: 'website',
+      url: `https://nexoral.in/projects/${slug}`,
+      title: `${project.name} - Nexoral Systems`,
+      description: project.description,
+      siteName: 'Nexoral Systems',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${project.name} - Nexoral Systems`,
+      description: project.description,
+      creator: '@theankansaha',
+    },
+  };
+}
+
+// Old static data - will be replaced with dynamic fetch
+const projectsDataFallback = {
   nexoraldns: {
     name: "NexoralDNS",
     tagline: "Production-Ready DNS Infrastructure for Modern Networks",
@@ -259,11 +301,54 @@ ls dist/
 
 export default async function ProjectPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const project = projectsData[slug as keyof typeof projectsData];
 
-  if (!project) {
+  // Fetch project data from GitHub
+  const fetchedProject = await getProjectBySlug(slug);
+
+  if (!fetchedProject) {
     notFound();
   }
+
+  // Transform to UI format with fallback to old structure
+  const project = {
+    name: fetchedProject.name,
+    tagline: fetchedProject.description,
+    description: fetchedProject.longDescription || fetchedProject.description,
+    version: fetchedProject.recentReleases[0]?.version || 'Latest',
+    status: fetchedProject.archived ? 'Archived' : (fetchedProject.stars >= 100 ? 'Production Ready' : 'Active Development'),
+    license: fetchedProject.license || 'MIT',
+    github: fetchedProject.githubUrl,
+    tech: fetchedProject.topics.length > 0 ? fetchedProject.topics : [fetchedProject.language || 'Code'],
+    features: [
+      {
+        title: fetchedProject.language ? `Built with ${fetchedProject.language}` : 'Modern Technology',
+        description: `${fetchedProject.stars} stars on GitHub with ${fetchedProject.forks} forks`,
+        icon: '⭐',
+      },
+      {
+        title: 'Open Source',
+        description: `Licensed under ${fetchedProject.license || 'open source license'}`,
+        icon: '📖',
+      },
+      {
+        title: 'Community Driven',
+        description: `${fetchedProject.contributors.length} contributors actively maintaining the project`,
+        icon: '👥',
+      },
+      {
+        title: 'Active Development',
+        description: `Last updated ${new Date(fetchedProject.updatedAt).toLocaleDateString()}`,
+        icon: '🚀',
+      },
+    ],
+    installation: fetchedProject.readme ? '# Installation instructions in README' : '# Check GitHub for installation',
+    usageExample: fetchedProject.readme ? '# See README for usage examples' : '# Visit GitHub repository',
+    metrics: [
+      { label: 'Stars', value: `${fetchedProject.stars}+`, color: 'emerald' },
+      { label: 'Forks', value: `${fetchedProject.forks}+`, color: 'blue' },
+      { label: 'Contributors', value: `${fetchedProject.contributors.length}`, color: 'purple' },
+    ],
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
@@ -451,10 +536,12 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
 }
 
 export async function generateStaticParams() {
-  return [
-    { slug: "nexoraldns" },
-    { slug: "axiodb" },
-    { slug: "containdb" },
-    { slug: "xpack" },
-  ];
+  try {
+    const slugs = await getAllProjectSlugs();
+    return slugs.map(slug => ({ slug }));
+  } catch (error) {
+    console.error('Error generating static params:', error);
+    // Fallback to empty array - dynamic params will handle it
+    return [];
+  }
 }

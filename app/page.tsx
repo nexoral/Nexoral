@@ -1,40 +1,22 @@
 import Link from "next/link";
+import { getProjectsForHomepage } from "@/lib/github/fetchers";
 
-export default function Home() {
-  const projects = [
-    {
-      slug: "nexoraldns",
-      name: "NexoralDNS",
-      description: "Docker-based smart DNS server for LANs with custom domain management, traffic monitoring, and security filtering. Web-based management interface.",
-      tech: ["Node.js", "TypeScript", "Docker", "Fastify", "Next.js"],
-      github: "https://github.com/nexoral/NexoralDNS",
-      highlight: "Production-Ready DNS Infrastructure",
-    },
-    {
-      slug: "axiodb",
-      name: "AxioDB",
-      description: "Lightweight NoSQL database for Node.js with MongoDB-style queries, AES-256 encryption, zero native dependencies. 2000+ NPM downloads.",
-      tech: ["Node.js", "TypeScript", "Worker Threads"],
-      github: "https://github.com/nexoral/AxioDB",
-      highlight: "2000+ NPM Downloads",
-    },
-    {
-      slug: "containdb",
-      name: "ContainDB",
-      description: "CLI tool for automating containerized database management. One-click setup for MongoDB, Redis, MySQL, PostgreSQL with GUI tools.",
-      tech: ["Go", "Docker", "CLI"],
-      github: "https://github.com/nexoral/ContainDB",
-      highlight: "Database DevOps Automation",
-    },
-    {
-      slug: "xpack",
-      name: "xpack",
-      description: "Universal Linux package builder converting binaries to .deb, .rpm, tar.gz. Automates native package creation for CI/CD pipelines.",
-      tech: ["Go", "Linux Packaging"],
-      github: "https://github.com/nexoral/xpack",
-      highlight: "CI/CD Ready",
-    },
-  ];
+// ISR: Revalidate every 12 hours
+export const revalidate = 43200;
+
+export default async function Home() {
+  // Fetch top 4 projects from GitHub
+  const fetchedProjects = await getProjectsForHomepage(4);
+
+  // Transform to UI format
+  const projects = fetchedProjects.map(project => ({
+    slug: project.slug,
+    name: project.name,
+    description: project.description,
+    tech: project.topics.slice(0, 5), // Use topics as tech stack, limit to 5
+    github: project.githubUrl,
+    highlight: project.stars >= 100 ? `${project.stars}+ Stars` : (project.language || 'Open Source'),
+  }));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">

@@ -1,48 +1,31 @@
 import Link from "next/link";
+import { getAllProjects } from "@/lib/github/fetchers";
 
-export default function ProjectsPage() {
-  const projects = [
-    {
-      slug: "nexoraldns",
-      name: "NexoralDNS",
-      description: "Docker-based smart DNS server for LANs with custom domain management, traffic monitoring, and security filtering. Web-based management interface.",
-      tech: ["Node.js", "TypeScript", "Docker", "Fastify", "Next.js"],
-      github: "https://github.com/nexoral/NexoralDNS",
-      highlight: "Production-Ready DNS Infrastructure",
-      status: "Active",
-      version: "v1.2.0",
-    },
-    {
-      slug: "axiodb",
-      name: "AxioDB",
-      description: "Lightweight NoSQL database for Node.js with MongoDB-style queries, AES-256 encryption, zero native dependencies. 2000+ NPM downloads.",
-      tech: ["Node.js", "TypeScript", "Worker Threads"],
-      github: "https://github.com/nexoral/AxioDB",
-      highlight: "2000+ NPM Downloads",
-      status: "Active",
-      version: "v2.5.1",
-    },
-    {
-      slug: "containdb",
-      name: "ContainDB",
-      description: "CLI tool for automating containerized database management. One-click setup for MongoDB, Redis, MySQL, PostgreSQL with GUI tools.",
-      tech: ["Go", "Docker", "CLI"],
-      github: "https://github.com/nexoral/ContainDB",
-      highlight: "Database DevOps Automation",
-      status: "Active",
-      version: "v1.0.3",
-    },
-    {
-      slug: "xpack",
-      name: "xpack",
-      description: "Universal Linux package builder converting binaries to .deb, .rpm, tar.gz. Automates native package creation for CI/CD pipelines.",
-      tech: ["Go", "Linux Packaging"],
-      github: "https://github.com/nexoral/xpack",
-      highlight: "CI/CD Ready",
-      status: "Active",
-      version: "v0.9.2",
-    },
-  ];
+// ISR: Revalidate every 12 hours
+export const revalidate = 43200;
+
+export default async function ProjectsPage() {
+  // Fetch all projects from GitHub
+  const fetchedProjects = await getAllProjects();
+
+  // Transform to UI format
+  const projects = fetchedProjects.map(project => {
+    // Determine status based on recent activity
+    const lastUpdated = new Date(project.updatedAt);
+    const daysSinceUpdate = Math.floor((Date.now() - lastUpdated.getTime()) / (1000 * 60 * 60 * 24));
+    const status = daysSinceUpdate < 30 ? "Active" : daysSinceUpdate < 180 ? "Maintained" : "Stable";
+
+    return {
+      slug: project.slug,
+      name: project.name,
+      description: project.description,
+      tech: project.topics.length > 0 ? project.topics.slice(0, 5) : [project.language || 'Code'],
+      github: project.githubUrl,
+      highlight: project.stars >= 100 ? `${project.stars}+ Stars` : (project.language || 'Open Source'),
+      status,
+      version: project.recentReleases[0]?.version || 'Latest',
+    };
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
