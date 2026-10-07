@@ -1,208 +1,235 @@
-/* eslint-disable react/jsx-no-comment-textnodes */
+import type { Metadata } from "next";
 import Link from "next/link";
-import { getProjectsForHomepage, getOrganizationStats } from "@/lib/github/fetchers";
-import { Navigation } from "@/components/layout/navigation";
-import { Footer } from "@/components/layout/footer";
-import { PageTransition } from "@/components/layout/page-transition";
-import { HeroTerminal } from "@/components/home/hero-terminal";
-import { StatsSection } from "@/components/home/stats-section";
-import { ProjectCard } from "@/components/home/project-card";
-import { FadeIn } from "@/components/animations/fade-in";
+import { ArrowRight, Boxes, Database, Languages, Network, ShieldCheck, Terminal } from "lucide-react";
+import { Section, SectionHeading } from "@/components/layout/section";
+import { StatGrid } from "@/components/site/stat";
+import { ProjectCard } from "@/components/site/project-card";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getFeaturedProjects, getOrgStats, getProjectsByCategory } from "@/lib/projects/service";
+import { ORG_DETAILS, SITE_CONFIG, SOCIALS } from "@/lib/constants";
+import { formatCompact } from "@/lib/npm/fetchers";
+import { formatNumber } from "@/lib/format";
 
-// ISR: Revalidate every 12 hours
 export const revalidate = 43200;
 
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
+
+const categoryBlurbs: Record<string, string> = {
+  network: "Self-hosted DNS and edge routing you fully control.",
+  data: "Embedded storage that runs inside your own process.",
+  tooling: "Utilities that remove repetitive setup and release work.",
+  education: "Programming made accessible in regional languages.",
+};
+
+const principles = [
+  {
+    icon: Boxes,
+    title: "Open source, not open-washed",
+    body: "Every project ships under a real OSI license (MIT or GPL-3.0) with the source on GitHub.",
+  },
+  {
+    icon: Terminal,
+    title: "Self-hostable by default",
+    body: "Run the tools on your own machine or LAN. No mandatory account, no forced cloud.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "No tracking, no telemetry",
+    body: "The tools and this site do not phone home or sell your data.",
+  },
+  {
+    icon: Database,
+    title: "Documentation first",
+    body: "Install guides, API references and troubleshooting are treated as part of the product.",
+  },
+];
+
 export default async function Home() {
-  // Fetch top 4 projects from GitHub and organization stats
-  const [fetchedProjects, stats] = await Promise.all([
-    getProjectsForHomepage(4),
-    getOrganizationStats(),
+  const [stats, featured, groups] = await Promise.all([
+    getOrgStats(),
+    getFeaturedProjects(4),
+    getProjectsByCategory(),
   ]);
 
-  // Transform to UI format
-  const projects = fetchedProjects.map(project => ({
-    slug: project.slug,
-    name: project.name,
-    description: project.description,
-    tech: project.topics.slice(0, 5), // Use topics as tech stack, limit to 5
-    github: project.githubUrl,
-    highlight: project.stars >= 100 ? `${project.stars}+ Stars` : (project.language || 'Open Source'),
-  }));
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
-      {/* Navigation */}
-      <Navigation />
+    <>
+      <Section className="pt-20 sm:pt-24 lg:pt-28">
+        <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
+          Open source · Free forever
+        </p>
+        <h1 className="max-w-5xl text-4xl leading-[1.05] font-semibold tracking-tight text-balance sm:text-6xl lg:text-7xl">
+          Free, open-source tools for real infrastructure problems.
+        </h1>
+        <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
+          {SITE_CONFIG.name} is an independent, Udyam-registered software micro-enterprise from
+          West Bengal, India — building DNS, database, deployment and packaging tools for
+          developers, small businesses, and home networks.
+        </p>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Button size="lg" render={<Link href="/projects" />}>
+            Explore projects <ArrowRight />
+          </Button>
+          <Button size="lg" variant="outline" render={<Link href="/support" />}>
+            Support the work
+          </Button>
+        </div>
+      </Section>
 
-      {/* Hero Section */}
-      <PageTransition>
-        <header className="container mx-auto px-6 py-20 md:py-32">
-          <div className="max-w-4xl">
-            {/* Terminal-style header */}
-            <HeroTerminal projectCount={stats.totalProjects} starCount={stats.totalStars} />
+      <Section className="py-0">
+        <StatGrid
+          stats={[
+            { value: formatNumber(stats.totalProjects), label: "Open-source projects" },
+            { value: formatNumber(stats.totalStars), label: "GitHub stars" },
+            { value: `${formatCompact(stats.totalNpmYear)}`, label: "npm downloads / year" },
+            {
+              value: "100%",
+              label: "Free & open source",
+            },
+          ]}
+        />
+      </Section>
 
-            <FadeIn delay={0.3}>
-              <div className="mb-6 inline-block rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-1.5 text-sm font-mono text-emerald-400">
-                &lt;OpenSource /&gt;
-              </div>
-            </FadeIn>
+      <Section>
+        <SectionHeading
+          eyebrow="What we build"
+          title="Four areas, one principle: keep it free and usable"
+          description="We group our work by the problem it solves — not by how it sounds in a pitch deck."
+        />
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {groups.map((group) => {
+            const Icon =
+              group.category === "network"
+                ? Network
+                : group.category === "data"
+                  ? Database
+                  : group.category === "education"
+                    ? Languages
+                    : Terminal;
+            return (
+              <Card key={group.category} className="bg-card/50">
+                <CardHeader>
+                  <Icon className="size-5 text-primary" />
+                  <CardTitle>{group.label}</CardTitle>
+                </CardHeader>
+                <CardContent className="text-sm text-muted-foreground">
+                  {categoryBlurbs[group.category]}
+                  <span className="mt-3 block text-xs text-muted-foreground/80">
+                    {group.projects.length} project{group.projects.length === 1 ? "" : "s"}
+                  </span>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      </Section>
 
-            <FadeIn delay={0.5}>
-              <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white via-emerald-200 to-emerald-400 bg-clip-text text-transparent animate-gradient">
-                Nexoral Systems
-              </h1>
-            </FadeIn>
-
-            <FadeIn delay={0.7}>
-              <p className="text-xl md:text-2xl text-slate-300 mb-8 leading-relaxed">
-                Building next-generation <span className="text-emerald-400 font-semibold font-mono">infrastructure</span>, <span className="text-blue-400 font-semibold font-mono">developer tools</span>, and <span className="text-purple-400 font-semibold font-mono">scalable platforms</span> that empower developers and solve real-world technical challenges.
-              </p>
-            </FadeIn>
-
-            <FadeIn delay={0.9}>
-              <div className="flex flex-wrap gap-4">
-            <Link
-              href="/projects"
-              className="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors"
-            >
-              Explore Projects →
-            </Link>
-            <Link
-              href="/founder"
-              className="px-6 py-3 border border-slate-600 hover:border-emerald-400 rounded-lg transition-colors"
-            >
-              About the Founder
-            </Link>
-            <a
-              href="https://github.com/nexoral"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-6 py-3 border border-slate-700 hover:border-slate-500 rounded-lg transition-colors flex items-center gap-2"
-            >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                </svg>
-                GitHub
-              </a>
-            </div>
-          </FadeIn>
-          </div>
-        </header>
-      </PageTransition>
-
-      {/* Stats Section */}
-      <section className="container mx-auto px-6 py-16 border-t border-slate-800">
-        <div className="max-w-4xl">
-          <StatsSection
-            totalProjects={stats.totalProjects}
-            totalStars={stats.totalStars}
-            mitLicensedPercentage={stats.mitLicensedPercentage}
+      <Section bordered>
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <SectionHeading
+            eyebrow="Featured"
+            title="Flagship projects"
+            description="The tools people reach for most, with live data pulled from GitHub and npm."
+            className="mb-0"
           />
-
-          <FadeIn>
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 font-mono">
-              <span className="text-emerald-400">//</span> Our Mission
-            </h2>
-          </FadeIn>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            <FadeIn delay={0.1}>
-              <div className="p-6 rounded-xl bg-slate-800/30 border border-slate-700 hover:border-emerald-500/50 transition-all">
-                <div className="text-3xl mb-3">⚡</div>
-                <h3 className="text-xl font-semibold mb-2 font-mono">&lt;OpenSource /&gt;</h3>
-                <p className="text-slate-400 text-sm">Publishing projects that address real-world problems and streamline development workflows.</p>
-              </div>
-            </FadeIn>
-            <FadeIn delay={0.2}>
-              <div className="p-6 rounded-xl bg-slate-800/30 border border-slate-700 hover:border-blue-500/50 transition-all">
-                <div className="text-3xl mb-3">🛠️</div>
-                <h3 className="text-xl font-semibold mb-2 font-mono">const tools = []</h3>
-                <p className="text-slate-400 text-sm">Building tools that boost productivity, simplify complex tasks, and enable rapid prototyping.</p>
-              </div>
-            </FadeIn>
-            <FadeIn delay={0.3}>
-              <div className="p-6 rounded-xl bg-slate-800/30 border border-slate-700 hover:border-purple-500/50 transition-all">
-                <div className="text-3xl mb-3">🚀</div>
-                <h3 className="text-xl font-semibold mb-2 font-mono">scale(∞)</h3>
-                <p className="text-slate-400 text-sm">Creating scalable, robust infrastructure for cloud, edge, and on-premises environments.</p>
-              </div>
-            </FadeIn>
-          </div>
+          <Button variant="ghost" render={<Link href="/projects" />}>
+            View all <ArrowRight />
+          </Button>
         </div>
-      </section>
-
-      {/* Projects Section */}
-      <section className="container mx-auto px-6 py-16">
-        <div className="max-w-6xl">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 font-mono">
-            <span className="text-emerald-400">//</span> Featured Projects
-          </h2>
-          <p className="text-slate-400 mb-12 text-lg">Production-ready tools built to solve real development challenges.</p>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            {projects.map((project, index) => (
-              <ProjectCard
-                key={project.slug}
-                {...project}
-                index={index}
-              />
-            ))}
-          </div>
-
-          <div className="mt-8 text-center">
-            <Link
-              href="/projects"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-slate-800/50 border border-slate-700 hover:border-emerald-500/50 rounded-lg transition-all font-mono"
-            >
-              View All Projects
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </Link>
-          </div>
+        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {featured.map((project) => (
+            <ProjectCard key={project.slug} project={project} />
+          ))}
         </div>
-      </section>
+      </Section>
 
-      {/* About Founder Section */}
-      <section className="container mx-auto px-6 py-16 border-t border-slate-800">
-        <div className="max-w-4xl">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 font-mono">
-            <span className="text-emerald-400">//</span> Founded by Ankan Saha
-          </h2>
-          <div className="p-8 rounded-xl bg-slate-800/30 border border-slate-700 hover:border-slate-600 transition-all">
-            <p className="text-lg text-slate-300 mb-4 leading-relaxed">
-              Software Engineer from India specializing in <span className="text-blue-400 font-mono">networking protocols</span>, <span className="text-purple-400 font-mono">distributed systems</span>, and <span className="text-emerald-400 font-mono">backend development</span>.
-              Building production-ready infrastructure tools and solving real-world technical challenges.
-            </p>
-            <p className="text-slate-400 mb-6 font-mono text-sm">
-              <span className="text-slate-600">&gt;</span> From debugging DNS configurations at 3 AM to building tools that prevent others from doing the same.
-              Nexoral is where experimental projects become production-ready solutions.
-            </p>
-            <div className="flex flex-wrap gap-6">
-              <Link
-                href="/founder"
-                className="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors"
-              >
-                Learn More →
-              </Link>
-              <a
-                href="https://github.com/AnkanSaha"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-6 py-3 border border-slate-600 hover:border-slate-500 rounded-lg transition-colors flex items-center gap-2"
-              >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                </svg>
-                GitHub
-              </a>
+      <Section bordered>
+        <SectionHeading eyebrow="How we work" title="What 'free and open' actually means here" />
+        <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2">
+          {principles.map((principle) => (
+            <div key={principle.title} className="flex gap-4">
+              <principle.icon className="mt-0.5 size-5 shrink-0 text-primary" />
+              <div>
+                <h3 className="font-medium">{principle.title}</h3>
+                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                  {principle.body}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      <Section bordered>
+        <div className="grid gap-10 lg:grid-cols-2">
+          <div>
+            <SectionHeading
+              eyebrow="How Nexoral is run"
+              title="Independent, transparent, and accountable"
+              description="Nexoral Systems is a registered micro-enterprise, not a closed product company. One maintainer leads the work with help from contributors, and the books stay visible."
+            />
+            <div className="flex flex-wrap gap-3">
+              <Button variant="outline" render={<Link href="/about" />}>
+                About Nexoral
+              </Button>
+              <Button variant="outline" render={<Link href="/support" />}>
+                Funding & support
+              </Button>
             </div>
           </div>
+          <Card className="bg-card/50">
+            <CardContent className="space-y-4 pt-6 text-sm">
+              <div className="flex justify-between gap-4">
+                <span className="text-muted-foreground">Legal enterprise</span>
+                <span className="text-right font-medium">{ORG_DETAILS.legalName}</span>
+              </div>
+              <div className="flex justify-between gap-4">
+                <span className="text-muted-foreground">Type</span>
+                <span className="text-right font-medium">{ORG_DETAILS.enterpriseType}</span>
+              </div>
+              <div className="flex justify-between gap-4">
+                <span className="text-muted-foreground">Udyam number</span>
+                <span className="text-right font-mono text-xs font-medium">
+                  {ORG_DETAILS.udyamNumber}
+                </span>
+              </div>
+              <div className="flex justify-between gap-4">
+                <span className="text-muted-foreground">Registered from</span>
+                <span className="text-right font-medium">
+                  {ORG_DETAILS.address.locality}, {ORG_DETAILS.address.region},{" "}
+                  {ORG_DETAILS.address.countryName}
+                </span>
+              </div>
+              <div className="flex justify-between gap-4">
+                <span className="text-muted-foreground">Incorporated</span>
+                <span className="text-right font-medium">{ORG_DETAILS.incorporationLabel}</span>
+              </div>
+            </CardContent>
+          </Card>
         </div>
-      </section>
+      </Section>
 
-      {/* Footer */}
-      <Footer />
-    </div>
+      <Section bordered>
+        <div className="flex flex-col items-start justify-between gap-6 rounded-2xl border border-border bg-gradient-to-br from-primary/10 to-transparent p-8 sm:p-10 lg:flex-row lg:items-center">
+          <div>
+            <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+              Keep the tools free
+            </h2>
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+              Core tools will always be free. Sponsorship and grants pay for maintenance,
+              documentation, and infrastructure — so the work stays independent.
+            </p>
+          </div>
+          <Button
+            size="lg"
+            render={<a href={SOCIALS.sponsor} target="_blank" rel="noopener noreferrer" />}
+          >
+            Sponsor on GitHub
+          </Button>
+        </div>
+      </Section>
+    </>
   );
 }

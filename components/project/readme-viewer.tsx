@@ -1,141 +1,83 @@
-"use client";
-
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import { cn } from "@/lib/utils";
 
-interface ReadmeViewerProps {
-  readme: string;
-}
+const components: Components = {
+  h1: ({ children }) => (
+    <h2 className="mt-10 mb-4 border-b border-border pb-2 text-2xl font-semibold tracking-tight first:mt-0">
+      {children}
+    </h2>
+  ),
+  h2: ({ children }) => (
+    <h3 className="mt-9 mb-3 text-xl font-semibold tracking-tight first:mt-0">{children}</h3>
+  ),
+  h3: ({ children }) => (
+    <h4 className="mt-7 mb-2 text-lg font-semibold first:mt-0">{children}</h4>
+  ),
+  h4: ({ children }) => <h5 className="mt-6 mb-2 font-semibold first:mt-0">{children}</h5>,
+  p: ({ children }) => (
+    <p className="my-4 text-sm leading-relaxed text-muted-foreground first:mt-0">{children}</p>
+  ),
+  a: ({ href, children }) => (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="font-medium text-primary underline underline-offset-2 hover:text-primary/80"
+    >
+      {children}
+    </a>
+  ),
+  ul: ({ children }) => (
+    <ul className="my-4 list-disc space-y-2 pl-5 text-sm text-muted-foreground">{children}</ul>
+  ),
+  ol: ({ children }) => (
+    <ol className="my-4 list-decimal space-y-2 pl-5 text-sm text-muted-foreground">{children}</ol>
+  ),
+  li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+  blockquote: ({ children }) => (
+    <blockquote className="my-4 border-l-2 border-primary/60 pl-4 text-sm text-muted-foreground italic">
+      {children}
+    </blockquote>
+  ),
+  pre: ({ children }) => (
+    <pre className="my-4 overflow-x-auto rounded-lg border border-border bg-muted/40 p-4 text-xs leading-relaxed">
+      {children}
+    </pre>
+  ),
+  code: ({ className, children }) =>
+    className?.startsWith("language-") ? (
+      <code className={cn("font-mono", className)}>{children}</code>
+    ) : (
+      <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[0.85em] text-primary">
+        {children}
+      </code>
+    ),
+  table: ({ children }) => (
+    <div className="my-4 overflow-x-auto">
+      <table className="w-full border-collapse border border-border text-sm">{children}</table>
+    </div>
+  ),
+  thead: ({ children }) => <thead className="bg-muted/50">{children}</thead>,
+  th: ({ children }) => (
+    <th className="border border-border px-3 py-2 text-left font-semibold">{children}</th>
+  ),
+  td: ({ children }) => <td className="border border-border px-3 py-2 text-muted-foreground">{children}</td>,
+  hr: () => <hr className="my-8 border-border" />,
+  img: ({ src, alt }) => (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={typeof src === "string" ? src : ""} alt={alt ?? ""} className="my-4 rounded-lg border border-border" />
+  ),
+};
 
-export function ReadmeViewer({ readme }: ReadmeViewerProps) {
+export function ReadmeViewer({ readme }: { readme: string | null }) {
   if (!readme) {
-    return (
-      <div className="text-center py-12 text-slate-400">
-        <p>No README available for this project.</p>
-      </div>
-    );
+    return <p className="text-sm text-muted-foreground">No README available for this project.</p>;
   }
 
   return (
-    <div className="prose prose-invert prose-slate max-w-none">
-      <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
-        components={{
-          // Headings
-          h1: ({ children }) => (
-            <h1 className="text-3xl font-bold mb-4 text-white border-b border-slate-700 pb-2">
-              {children}
-            </h1>
-          ),
-          h2: ({ children }) => (
-            <h2 className="text-2xl font-bold mb-3 mt-8 text-emerald-400">
-              {children}
-            </h2>
-          ),
-          h3: ({ children }) => (
-            <h3 className="text-xl font-semibold mb-2 mt-6 text-white">
-              {children}
-            </h3>
-          ),
-          // Paragraphs
-          p: ({ children }) => (
-            <p className="text-slate-300 leading-relaxed mb-4">{children}</p>
-          ),
-          // Links
-          a: ({ href, children }) => (
-            <a
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-emerald-400 hover:text-emerald-300 underline transition-colors"
-            >
-              {children}
-            </a>
-          ),
-          // Lists
-          ul: ({ children }) => (
-            <ul className="list-disc list-inside space-y-2 mb-4 text-slate-300">
-              {children}
-            </ul>
-          ),
-          ol: ({ children }) => (
-            <ol className="list-decimal list-inside space-y-2 mb-4 text-slate-300">
-              {children}
-            </ol>
-          ),
-          // Code
-          code: ({ inline, className, children, ...props }: any) => {
-            const match = /language-(\w+)/.exec(className || "");
-            const language = match ? match[1] : "";
-
-            return !inline && language ? (
-              <div className="my-4 rounded-lg overflow-hidden border border-slate-700">
-                <SyntaxHighlighter
-                  style={vscDarkPlus}
-                  language={language}
-                  PreTag="div"
-                  customStyle={{
-                    margin: 0,
-                    padding: "1rem",
-                    background: "#0f172a",
-                  }}
-                  {...props}
-                >
-                  {String(children).replace(/\n$/, "")}
-                </SyntaxHighlighter>
-              </div>
-            ) : (
-              <code
-                className="px-1.5 py-0.5 rounded bg-slate-800 text-emerald-400 text-sm font-mono"
-                {...props}
-              >
-                {children}
-              </code>
-            );
-          },
-          // Blockquotes
-          blockquote: ({ children }) => (
-            <blockquote className="border-l-4 border-emerald-500 pl-4 py-2 my-4 bg-slate-800/30 italic text-slate-400">
-              {children}
-            </blockquote>
-          ),
-          // Tables
-          table: ({ children }) => (
-            <div className="overflow-x-auto my-4">
-              <table className="min-w-full border border-slate-700">
-                {children}
-              </table>
-            </div>
-          ),
-          thead: ({ children }) => (
-            <thead className="bg-slate-800">{children}</thead>
-          ),
-          tbody: ({ children }) => (
-            <tbody className="divide-y divide-slate-700">{children}</tbody>
-          ),
-          tr: ({ children }) => <tr>{children}</tr>,
-          th: ({ children }) => (
-            <th className="px-4 py-2 text-left text-white font-semibold">
-              {children}
-            </th>
-          ),
-          td: ({ children }) => (
-            <td className="px-4 py-2 text-slate-300">{children}</td>
-          ),
-          // Horizontal Rule
-          hr: () => <hr className="my-8 border-slate-700" />,
-          // Images
-          img: ({ src, alt }) => (
-            <img
-              src={src}
-              alt={alt || ""}
-              className="rounded-lg border border-slate-700 my-4"
-            />
-          ),
-        }}
-      >
+    <div className="max-w-none">
+      <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
         {readme}
       </ReactMarkdown>
     </div>

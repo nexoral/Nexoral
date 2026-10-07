@@ -1,316 +1,255 @@
-import Link from "next/link";
-import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { ExternalLink, Star, GitFork, Users } from "lucide-react";
-import { getProjectBySlug, getAllProjectSlugs } from "@/lib/github/fetchers";
-import { Navigation } from "@/components/layout/navigation";
-import { PageTransition } from "@/components/layout/page-transition";
-import { FadeIn } from "@/components/animations/fade-in";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FeatureShowcase } from "@/components/project/feature-showcase";
-import { CodeBlock } from "@/components/project/code-block";
-import { ContributorGrid } from "@/components/project/contributor-grid";
-import { ActivityTimeline } from "@/components/project/activity-timeline";
+import Link from "next/link";
+import Image from "next/image";
+import { notFound } from "next/navigation";
+import { ExternalLink, Star } from "lucide-react";
+import { GithubIcon } from "@/components/site/icons";
+import { Section } from "@/components/layout/section";
 import { ReadmeViewer } from "@/components/project/readme-viewer";
+import { CodeBlock } from "@/components/site/code-block";
+import { JsonLd } from "@/components/seo/json-ld";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { getProjectDetailBySlug } from "@/lib/projects/service";
 import {
-  extractFeaturesFromReadme,
-  getFallbackFeatures,
-} from "@/lib/markdown/feature-extractor";
-import {
-  extractInstallation,
-  extractUsage,
-  getFallbackInstallation,
-  getFallbackUsage,
-} from "@/lib/markdown/code-extractor";
+  breadcrumbSchema,
+  softwareApplicationSchema,
+  softwareSourceCodeSchema,
+} from "@/lib/seo/schema";
+import { extractInstallation, getFallbackInstallation } from "@/lib/markdown/code-extractor";
+import { formatCompact } from "@/lib/npm/fetchers";
+import { activityStatus, formatDate, formatNumber } from "@/lib/format";
+import { SITE_CONFIG } from "@/lib/constants";
 
-// ISR: Revalidate every 12 hours
 export const revalidate = 43200;
-
-// Enable dynamic params for new repos added after build
 export const dynamicParams = true;
 
-// Generate metadata for SEO
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const project = await getProjectBySlug(slug);
-
-  if (!project) {
-    return {
-      title: "Project Not Found | Nexoral Systems",
-      description: "The requested project could not be found.",
-    };
-  }
+  const project = await getProjectDetailBySlug(slug);
+  if (!project) return { title: "Project not found" };
 
   return {
-    title: `${project.name} - ${project.description.substring(0, 100)} | Nexoral Systems`,
-    description: project.longDescription || project.description,
-    keywords: [
-      project.name,
-      ...project.topics,
-      project.language || "",
-      "open source",
-      "Nexoral",
-      "GitHub",
-    ].filter(Boolean),
-    authors: [{ name: "Ankan Saha", url: "https://github.com/AnkanSaha" }],
+    title: project.name,
+    description: project.description,
+    alternates: { canonical: `/projects/${slug}` },
     openGraph: {
+      title: `${project.name} | ${SITE_CONFIG.name}`,
+      description: project.description,
+      url: `${SITE_CONFIG.url}/projects/${slug}`,
       type: "website",
-      url: `https://nexoral.in/projects/${slug}`,
-      title: `${project.name} - Nexoral Systems`,
-      description: project.description,
-      siteName: "Nexoral Systems",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: `${project.name} - Nexoral Systems`,
-      description: project.description,
-      creator: "@theankansaha",
     },
   };
 }
 
-export default async function ProjectPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export default async function ProjectPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const project = await getProjectDetailBySlug(slug);
+  if (!project) notFound();
 
-  // Fetch project data from GitHub
-  const project = await getProjectBySlug(slug);
+  const npmUrl = project.npm ? `https://www.npmjs.com/package/${project.npm.package}` : undefined;
+  const install =
+    (project.readme ? extractInstallation(project.readme) : null) ??
+    getFallbackInstallation(slug, project.language ?? undefined);
+  const status = activityStatus(project.lastPushedAt);
 
-  if (!project) {
-    notFound();
-  }
-
-  // Extract features from README
-  const extractedFeatures = extractFeaturesFromReadme(project.readme || "");
-  const features =
-    extractedFeatures.length > 0
-      ? extractedFeatures
-      : getFallbackFeatures(slug);
-
-  // Extract code examples
-  const installation =
-    extractInstallation(project.readme || "") ||
-    getFallbackInstallation(slug, project.language || undefined);
-  const usageExample = extractUsage(project.readme || "") || getFallbackUsage(slug, project.language || undefined);
+  const schemaInput = {
+    name: project.name,
+    description: project.description,
+    url: `${SITE_CONFIG.url}/projects/${slug}`,
+    codeRepository: project.githubUrl,
+    language: project.language,
+    license: project.license,
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
-      <Navigation />
+    <>
+      <JsonLd
+        data={[
+          softwareSourceCodeSchema(schemaInput),
+          softwareApplicationSchema(schemaInput),
+          breadcrumbSchema([
+            { name: "Home", url: SITE_CONFIG.url },
+            { name: "Projects", url: `${SITE_CONFIG.url}/projects` },
+            { name: project.name, url: `${SITE_CONFIG.url}/projects/${slug}` },
+          ]),
+        ]}
+      />
 
-      <PageTransition>
-        <div className="container mx-auto px-6 py-12">
-          <div className="max-w-5xl mx-auto">
-            {/* Breadcrumb */}
-            <FadeIn>
-              <div className="mb-6 flex items-center gap-2 text-sm font-mono text-slate-500">
-                <Link
-                  href="/projects"
-                  className="hover:text-emerald-400 transition-colors"
-                >
-                  projects
-                </Link>
-                <span>/</span>
-                <span className="text-slate-300">{slug}</span>
-              </div>
-            </FadeIn>
+      <Section className="pt-12 sm:pt-16">
+        <nav
+          aria-label="Breadcrumb"
+          className="mb-8 flex items-center gap-2 text-sm text-muted-foreground"
+        >
+          <Link href="/projects" className="transition-colors hover:text-foreground">
+            Projects
+          </Link>
+          <span aria-hidden>/</span>
+          <span className="text-foreground">{project.name}</span>
+        </nav>
 
-            {/* Hero Header */}
-            <FadeIn delay={0.1}>
-              <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-white via-emerald-200 to-emerald-400 bg-clip-text text-transparent animate-gradient font-mono">
-                {project.name}
-              </h1>
-            </FadeIn>
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+          <div className="max-w-3xl">
+            <div className="mb-4 flex flex-wrap items-center gap-2">
+              <Badge variant="secondary">{project.categoryLabel}</Badge>
+              {project.language ? <Badge variant="outline">{project.language}</Badge> : null}
+              {project.license ? <Badge variant="outline">{project.license}</Badge> : null}
+              <Badge variant="ghost">{status}</Badge>
+            </div>
+            <h1 className="text-3xl font-semibold tracking-tight text-balance sm:text-5xl">
+              {project.name}
+            </h1>
+            <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
+              {project.description}
+            </p>
+          </div>
 
-            <FadeIn delay={0.2}>
-              <p className="text-2xl text-slate-300 mb-6">
-                {project.description}
-              </p>
-            </FadeIn>
-
-            {/* Status Badges */}
-            <FadeIn delay={0.3}>
-              <div className="flex flex-wrap gap-3 mb-8">
-                <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-sm font-mono">
-                  {project.recentReleases[0]?.version || "Latest"}
-                </span>
-                <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30 text-sm font-mono">
-                  {project.archived
-                    ? "Archived"
-                    : project.stars >= 100
-                    ? "Production Ready"
-                    : "Active Development"}
-                </span>
-                {project.license && (
-                  <span className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-400 border border-purple-500/30 text-sm font-mono">
-                    {project.license}
-                  </span>
-                )}
-                {project.language && (
-                  <span className="px-3 py-1 rounded-full bg-slate-700/50 text-slate-300 border border-slate-600 text-sm font-mono">
-                    {project.language}
-                  </span>
-                )}
-              </div>
-            </FadeIn>
-
-            {/* Key Metrics */}
-            <FadeIn delay={0.4}>
-              <div className="grid grid-cols-3 gap-4 mb-8">
-                <div className="p-4 rounded-lg bg-slate-800/30 border border-slate-700 text-center">
-                  <div className="flex items-center justify-center gap-2 text-2xl font-bold text-emerald-400 mb-1">
-                    <Star className="w-5 h-5" />
-                    {project.stars}
-                  </div>
-                  <div className="text-sm text-slate-400">Stars</div>
-                </div>
-                <div className="p-4 rounded-lg bg-slate-800/30 border border-slate-700 text-center">
-                  <div className="flex items-center justify-center gap-2 text-2xl font-bold text-blue-400 mb-1">
-                    <GitFork className="w-5 h-5" />
-                    {project.forks}
-                  </div>
-                  <div className="text-sm text-slate-400">Forks</div>
-                </div>
-                <div className="p-4 rounded-lg bg-slate-800/30 border border-slate-700 text-center">
-                  <div className="flex items-center justify-center gap-2 text-2xl font-bold text-purple-400 mb-1">
-                    <Users className="w-5 h-5" />
-                    {project.contributors.length}
-                  </div>
-                  <div className="text-sm text-slate-400">Contributors</div>
-                </div>
-              </div>
-            </FadeIn>
-
-            {/* CTA Buttons */}
-            <FadeIn delay={0.5}>
-              <div className="flex flex-wrap gap-4 mb-12">
-                <a
-                  href={project.githubUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-white text-slate-900 font-semibold rounded-lg hover:bg-slate-200 transition-colors"
-                >
-                  View on GitHub →
-                </a>
-                <a
-                  href={`${project.githubUrl}#readme`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-6 py-3 border border-slate-600 hover:border-emerald-400 rounded-lg transition-colors"
-                >
-                  <ExternalLink className="w-5 h-5" />
-                  Documentation
-                </a>
-              </div>
-            </FadeIn>
-
-            {/* Tabbed Content */}
-            <Tabs defaultValue="overview" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 mb-8">
-                <TabsTrigger value="overview">Overview</TabsTrigger>
-                <TabsTrigger value="docs">Documentation</TabsTrigger>
-                <TabsTrigger value="activity">Activity</TabsTrigger>
-              </TabsList>
-
-              {/* Overview Tab */}
-              <TabsContent value="overview" className="space-y-8">
-                {/* Features */}
-                {features.length > 0 && <FeatureShowcase features={features} />}
-
-                {/* Tech Stack */}
-                {project.topics.length > 0 && (
-                  <div className="mb-12">
-                    <h2 className="text-2xl font-bold mb-4 font-mono text-emerald-400">
-                      // Tech Stack
-                    </h2>
-                    <div className="flex flex-wrap gap-3">
-                      {project.topics.map((topic) => (
-                        <span
-                          key={topic}
-                          className="px-4 py-2 rounded-lg bg-slate-800/50 text-slate-200 border border-slate-700 font-mono text-sm hover:border-emerald-500/50 transition-colors"
-                        >
-                          {topic}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Installation */}
-                {installation && (
-                  <div className="mb-12">
-                    <h2 className="text-2xl font-bold mb-4 font-mono text-emerald-400">
-                      // Installation
-                    </h2>
-                    <CodeBlock code={installation} language="bash" />
-                  </div>
-                )}
-
-                {/* Usage Example */}
-                {usageExample && (
-                  <div className="mb-12">
-                    <h2 className="text-2xl font-bold mb-4 font-mono text-emerald-400">
-                      // Usage Example
-                    </h2>
-                    <CodeBlock
-                      code={usageExample.code}
-                      language={usageExample.language}
-                    />
-                  </div>
-                )}
-              </TabsContent>
-
-              {/* Documentation Tab */}
-              <TabsContent value="docs">
-                <ReadmeViewer readme={project.readme || ""} />
-              </TabsContent>
-
-              {/* Activity Tab */}
-              <TabsContent value="activity" className="space-y-8">
-                <ActivityTimeline
-                  commits={project.recentCommits}
-                  releases={project.recentReleases}
-                />
-                <ContributorGrid contributors={project.contributors} />
-              </TabsContent>
-            </Tabs>
-
-            {/* Footer CTA */}
-            <FadeIn>
-              <div className="mt-12 p-6 rounded-xl bg-gradient-to-r from-emerald-500/10 to-blue-500/10 border border-emerald-500/30">
-                <h3 className="text-xl font-bold mb-2">Ready to get started?</h3>
-                <p className="text-slate-400 mb-4">
-                  Check out the full documentation and examples on GitHub
-                </p>
-                <a
-                  href={project.githubUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors"
-                >
-                  View on GitHub →
-                </a>
-              </div>
-            </FadeIn>
+          <div className="flex flex-wrap gap-3">
+            <Button render={<a href={project.githubUrl} target="_blank" rel="noopener noreferrer" />}>
+              <GithubIcon className="size-4" /> Source
+            </Button>
+            {project.docsUrl ? (
+              <Button
+                variant="outline"
+                render={<a href={project.docsUrl} target="_blank" rel="noopener noreferrer" />}
+              >
+                <ExternalLink /> Docs
+              </Button>
+            ) : null}
+            {project.liveUrl ? (
+              <Button
+                variant="outline"
+                render={<a href={project.liveUrl} target="_blank" rel="noopener noreferrer" />}
+              >
+                <ExternalLink /> Live
+              </Button>
+            ) : null}
+            {npmUrl ? (
+              <Button
+                variant="outline"
+                render={<a href={npmUrl} target="_blank" rel="noopener noreferrer" />}
+              >
+                <ExternalLink /> npm
+              </Button>
+            ) : null}
           </div>
         </div>
-      </PageTransition>
-    </div>
-  );
-}
 
-export async function generateStaticParams() {
-  try {
-    const slugs = await getAllProjectSlugs();
-    return slugs.map((slug) => ({ slug }));
-  } catch (error) {
-    console.error("Error generating static params:", error);
-    return [];
-  }
+        <dl className="mt-10 grid grid-cols-2 gap-6 border-y border-border py-6 sm:grid-cols-4">
+          <div>
+            <dt className="text-sm text-muted-foreground">Stars</dt>
+            <dd className="mt-1 inline-flex items-center gap-1.5 text-xl font-semibold">
+              <Star className="size-4" /> {formatNumber(project.stars)}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-sm text-muted-foreground">Forks</dt>
+            <dd className="mt-1 text-xl font-semibold">{formatNumber(project.forks)}</dd>
+          </div>
+          <div>
+            <dt className="text-sm text-muted-foreground">Downloads / month</dt>
+            <dd className="mt-1 text-xl font-semibold">
+              {project.npm ? formatCompact(project.npm.lastMonth) : "—"}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-sm text-muted-foreground">Last pushed</dt>
+            <dd className="mt-1 text-xl font-semibold">{formatDate(project.lastPushedAt)}</dd>
+          </div>
+        </dl>
+      </Section>
+
+      <Section className="pt-0">
+        <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_340px]">
+          <div>
+            <ReadmeViewer readme={project.readme} />
+          </div>
+
+          <aside className="space-y-8 lg:sticky lg:top-24 lg:self-start">
+            <div>
+              <h2 className="mb-3 text-sm font-semibold">Install</h2>
+              <CodeBlock code={install} />
+            </div>
+
+            {project.languages.length > 0 ? (
+              <div>
+                <h2 className="mb-3 text-sm font-semibold">Languages</h2>
+                <div className="space-y-2">
+                  {project.languages.slice(0, 6).map((language) => (
+                    <div key={language.name} className="text-sm">
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">{language.name}</span>
+                        <span className="text-xs text-muted-foreground">{language.percentage}%</span>
+                      </div>
+                      <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                        <div
+                          className="h-full rounded-full"
+                          style={{
+                            width: `${language.percentage}%`,
+                            backgroundColor: language.color,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
+            {project.recentReleases.length > 0 ? (
+              <div>
+                <h2 className="mb-3 text-sm font-semibold">Releases</h2>
+                <ul className="space-y-3 text-sm">
+                  {project.recentReleases.slice(0, 4).map((release) => (
+                    <li key={release.id}>
+                      <a
+                        href={release.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium text-primary hover:underline"
+                      >
+                        {release.version}
+                      </a>
+                      <p className="text-xs text-muted-foreground">
+                        {formatDate(release.publishedAt)}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+
+            {project.contributors.length > 0 ? (
+              <div>
+                <h2 className="mb-3 text-sm font-semibold">Contributors</h2>
+                <div className="flex flex-wrap gap-2">
+                  {project.contributors.slice(0, 10).map((contributor) => (
+                    <a
+                      key={contributor.username}
+                      href={contributor.profileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={`${contributor.username} · ${contributor.contributions} contributions`}
+                    >
+                      <Image
+                        src={contributor.avatarUrl}
+                        alt={contributor.username}
+                        width={32}
+                        height={32}
+                        className="size-8 rounded-full border border-border"
+                      />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </aside>
+        </div>
+      </Section>
+    </>
+  );
 }

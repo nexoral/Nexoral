@@ -1,48 +1,34 @@
-import { MetadataRoute } from 'next'
-import { getProjectsForSitemap } from '@/lib/github/fetchers'
+import type { MetadataRoute } from "next";
+import { SITE_CONFIG } from "@/lib/constants";
+import { getProjectViews } from "@/lib/projects/service";
 
-// ISR: Revalidate every 12 hours
 export const revalidate = 43200;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://nexoral.in'
+  const baseUrl = SITE_CONFIG.url;
+  const now = new Date();
 
-  // Static pages
   const staticPages: MetadataRoute.Sitemap = [
-    {
-      url: baseUrl,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 1,
-    },
-    {
-      url: `${baseUrl}/projects`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/founder`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-  ]
+    { url: baseUrl, lastModified: now, changeFrequency: "weekly", priority: 1 },
+    { url: `${baseUrl}/projects`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${baseUrl}/about`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${baseUrl}/support`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${baseUrl}/founder`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${baseUrl}/contact`, lastModified: now, changeFrequency: "yearly", priority: 0.5 },
+    { url: `${baseUrl}/license`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${baseUrl}/privacy`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
+  ];
 
-  // Fetch project pages dynamically from GitHub
   try {
-    const projects = await getProjectsForSitemap();
+    const projects = await getProjectViews();
     const projectPages: MetadataRoute.Sitemap = projects.map((project) => ({
       url: `${baseUrl}/projects/${project.slug}`,
-      lastModified: new Date(project.updatedAt),
-      changeFrequency: 'weekly',
-      priority: project.featured ? 0.9 : 0.8,
+      lastModified: new Date(project.lastPushedAt),
+      changeFrequency: "weekly",
+      priority: project.featured ? 0.9 : 0.7,
     }));
-
     return [...staticPages, ...projectPages];
-  } catch (error) {
-    console.error('Error generating sitemap:', error);
-    // Return static pages only if fetch fails
+  } catch {
     return staticPages;
   }
 }
