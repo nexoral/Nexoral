@@ -19,15 +19,15 @@ export function GET() {
 
   const body = `# ${SITE_CONFIG.name}
 
-> ${SITE_CONFIG.name} is an independent software company owned and run by Ankan Saha. It builds free, open-source infrastructure and developer tools, led by AxioDB, the embedded database for Node.js. The tools are self-hostable, send no telemetry, and are funded by sponsorship rather than paywalls.
+> ${SITE_CONFIG.name} is a registered systems technology enterprise incorporated in 2025 (Udyam MSME: Government of India), engineering open-core data primitives and managed edge cloud infrastructure, led by EdgeBalancer and AxioDB.
 
 ## Core pages
-- [Home](${base}/) : What the company is and the full product catalogue
-- [Products](${base}/projects) : All open-source products with live repository data
-- [Company](${base}/about) : Mission, who it serves, and how it is run
-- [Owner](${base}/founder) : Ankan Saha, owner and lead maintainer
-- [Support](${base}/support) : How to sponsor or fund the work
-- [Contact](${base}/contact)
+- [Home](${base}/) : What the company is, live EdgeBalancer production telemetry, and curated core systems
+- [Products](${base}/projects) : All 4 core infrastructure systems with live repository and download data
+- [Company](${base}/about) : Corporate standing, Udyam MSME registration, dual-engine model, and governance
+- [Founder](${base}/founder) : Ankan Saha, Founder & Chief Systems Architect
+- [Enterprise & Credits](${base}/support) : EdgeBalancer commercial tiers, Claude for Startups alignment, and enterprise support
+- [Contact](${base}/contact) : Official enterprise and technical inquiry channels
 
 ## Products
 ${projectsByCategory}

@@ -40,7 +40,7 @@ export function MobileNav() {
       {open ? (
         <div
           id="mobile-menu"
-          className="glass glass-strong fixed inset-x-0 top-14 bottom-0 z-40 flex flex-col border-x-0 border-b-0 px-5 py-6 sm:top-16"
+          className="fixed inset-x-0 top-14 bottom-0 z-40 flex flex-col border-x-0 border-b-0 px-5 py-6 sm:top-16 bg-white/95 backdrop-blur-2xl border-t border-black/[0.06]"
         >
           <nav className="flex flex-col" aria-label="Mobile">
             {NAV_LINKS.map((link) => (
@@ -48,21 +48,25 @@ export function MobileNav() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setOpen(false)}
-                className="border-b border-border py-4 font-heading text-xl font-medium tracking-tight"
+                className="border-b border-slate-100 py-4 font-heading text-xl font-medium tracking-tight text-foreground hover:text-primary"
               >
                 {link.label}
               </Link>
             ))}
           </nav>
-          <div className="mt-auto flex flex-col gap-3 pt-6">
-            <Button render={<a href={SOCIALS.sponsor} target="_blank" rel="noopener noreferrer" />}>
-              Sponsor the work
+          <div className="mt-auto flex flex-col gap-3 pt-6 border-t border-black/[0.06]">
+            <Button
+              className="bg-primary hover:bg-primary/90 text-white font-medium"
+              render={<Link href="/projects" onClick={() => setOpen(false)} />}
+            >
+              Explore Products →
             </Button>
             <Button
               variant="outline"
+              className="border-slate-200 bg-white hover:bg-slate-50 text-foreground"
               render={<a href={SOCIALS.github} target="_blank" rel="noopener noreferrer" />}
             >
-              GitHub
+              GitHub Organization
             </Button>
           </div>
         </div>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ArrowUpRight } from "lucide-react";
 import { PageTitle, Section } from "@/components/layout/section";
 import { ProductCatalogue } from "@/components/site/product-row";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -9,14 +10,14 @@ import { SITE_CONFIG } from "@/lib/constants";
 export const revalidate = 43200;
 
 export const metadata: Metadata = {
-  title: "Products",
+  title: "Products & Infrastructure Systems",
   description:
-    "Every open-source product from Nexoral Systems: databases, DNS and network tools, and developer utilities. Live data from GitHub and npm.",
+    "Core developer infrastructure and cloud edge systems by Nexoral Systems: EdgeBalancer, AxioDB, ContainDB, and NexoralDNS.",
   alternates: { canonical: "/projects" },
   openGraph: {
-    title: "Products | Nexoral Systems",
+    title: "Products & Infrastructure Systems | Nexoral Systems",
     description:
-      "Every open-source product from Nexoral Systems: databases, DNS and network tools, and developer utilities.",
+      "Production-grade infrastructure systems by Nexoral Systems: EdgeBalancer, AxioDB, ContainDB, and NexoralDNS.",
     url: `${SITE_CONFIG.url}/projects`,
   },
 };
@@ -43,29 +44,36 @@ export default async function ProjectsPage() {
 
       <Section className="pt-16 sm:pt-20 lg:pt-24">
         <PageTitle
-          title="Products"
-          description="Every project is free to use and open source, grouped by the problem it solves. Stars and download counts are pulled live from GitHub and npm."
+          title="Infrastructure Systems"
+          description="Nexoral Systems curates 4 dedicated production technologies engineered for extreme reliability, zero unnecessary dependencies, and edge performance."
         />
-        <p className="mt-6 text-sm text-muted-foreground">
-          {all.length} products ·{" "}
+        <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-muted-foreground font-mono">
+          <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-0.5 text-xs text-primary font-medium">
+            {all.length} Core Systems
+          </span>
+          <span>·</span>
           <a
             href={SITE_CONFIG.orgGitHub}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-primary underline decoration-primary/30 underline-offset-4 transition-colors hover:decoration-primary"
+            className="text-foreground hover:text-primary transition-colors flex items-center gap-1"
           >
-            View the organization on GitHub
+            <span>GitHub Organization</span>
+            <ArrowUpRight className="size-3.5" />
           </a>
-        </p>
+        </div>
       </Section>
 
       {groups.map((group) => (
         <Section key={group.category} divider size="tight">
-          <div className="grid gap-8 lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-12">
-            <div className="lg:pt-7">
-              <h2 className="font-heading text-xl font-medium tracking-tight">{group.label}</h2>
-              <p className="mt-2 text-sm text-muted-foreground">
-                {group.projects.length} project{group.projects.length === 1 ? "" : "s"}
+          <div className="grid gap-8 lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-12">
+            <div className="lg:pt-2">
+              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-primary">
+                Category
+              </span>
+              <h2 className="mt-1 text-xl font-bold tracking-tight text-foreground">{group.label}</h2>
+              <p className="mt-1 text-xs text-muted-foreground font-mono">
+                {group.projects.length} system{group.projects.length === 1 ? "" : "s"}
               </p>
             </div>
             <ProductCatalogue projects={group.projects} />

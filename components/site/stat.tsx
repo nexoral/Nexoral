@@ -10,9 +10,9 @@ export function Fact({
   className?: string;
 }) {
   return (
-    <div className={cn("flex flex-col", className)}>
-      <dt className="text-[13px] leading-snug text-muted-foreground">{label}</dt>
-      <dd className="order-first font-heading text-2xl font-medium tracking-tight sm:text-[1.75rem]">
+    <div className={cn("flex flex-col p-5 sm:p-6", className)}>
+      <dt className="text-xs font-mono text-muted-foreground uppercase tracking-wider">{label}</dt>
+      <dd className="order-first font-mono text-2xl sm:text-3xl font-bold tracking-tight text-foreground mb-1">
         {value}
       </dd>
     </div>
@@ -29,7 +29,7 @@ export function FactStrip({
   return (
     <dl
       className={cn(
-        "grid grid-cols-2 gap-x-6 gap-y-8 border-y border-border py-8 sm:grid-cols-4",
+        "glass glass-panel grid grid-cols-2 divide-y sm:divide-y-0 divide-x divide-slate-200 sm:grid-cols-4 rounded-2xl border border-black/[0.08] overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.04)]",
         className
       )}
     >

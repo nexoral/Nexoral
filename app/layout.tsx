@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Mono, IBM_Plex_Sans, IBM_Plex_Serif } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { SITE_CONFIG } from "@/lib/constants";
 import { Navigation } from "@/components/layout/navigation";
@@ -9,31 +9,22 @@ import { MotionProvider } from "@/components/motion/motion-provider";
 import { JsonLd } from "@/components/seo/json-ld";
 import { organizationSchema, websiteSchema } from "@/lib/seo/schema";
 
-const plexSans = IBM_Plex_Sans({
-  variable: "--font-plex-sans",
+const inter = Inter({
+  variable: "--font-sans",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
   display: "swap",
 });
 
-const plexSerif = IBM_Plex_Serif({
-  variable: "--font-plex-serif",
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-mono",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  display: "swap",
-});
-
-const plexMono = IBM_Plex_Mono({
-  variable: "--font-plex-mono",
-  subsets: ["latin"],
-  weight: ["400", "500"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_CONFIG.url),
   title: {
-    default: "Nexoral Systems | open-source software you can run yourself",
+    default: "Nexoral Systems | High-Performance Systems & Cloud Edge Infrastructure",
     template: "%s | Nexoral Systems",
   },
   description: SITE_CONFIG.description,
@@ -41,15 +32,15 @@ export const metadata: Metadata = {
   keywords: [
     "Nexoral",
     "Nexoral Systems",
-    "open source",
-    "self-hosted",
-    "developer tools",
-    "infrastructure software",
+    "EdgeBalancer",
+    "Cloudflare Worker Load Balancer",
     "AxioDB",
     "embedded database",
     "Node.js database",
     "NexoralDNS",
     "ContainDB",
+    "cloud infrastructure",
+    "developer tools",
     "Ankan Saha",
   ],
   authors: [{ name: SITE_CONFIG.founder.name, url: SITE_CONFIG.founder.url }],
@@ -62,12 +53,12 @@ export const metadata: Metadata = {
     locale: "en_IN",
     url: SITE_CONFIG.url,
     siteName: SITE_CONFIG.name,
-    title: "Nexoral Systems | open-source software you can run yourself",
+    title: "Nexoral Systems | High-Performance Systems & Cloud Edge Infrastructure",
     description: SITE_CONFIG.description,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Nexoral Systems | open-source software you can run yourself",
+    title: "Nexoral Systems | High-Performance Systems & Cloud Edge Infrastructure",
     description: SITE_CONFIG.description,
     creator: "@theankansaha",
   },
@@ -80,7 +71,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f4f5f2",
+  themeColor: "#ffffff",
   width: "device-width",
   initialScale: 1,
 };
@@ -93,13 +84,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${plexSans.variable} ${plexSerif.variable} ${plexMono.variable} flex min-h-screen flex-col`}
+        className={`${inter.variable} ${jetbrainsMono.variable} font-sans bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary flex min-h-screen flex-col`}
       >
         <AmbientBackground />
         <MotionProvider>
           <a
             href="#main"
-            className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-[60] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-primary-foreground"
+            className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-[60] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-primary-foreground shadow-lg"
           >
             Skip to content
           </a>

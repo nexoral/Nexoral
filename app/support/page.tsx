@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { PageTitle, Section, SectionHeading } from "@/components/layout/section";
-import { Stagger, StaggerItem } from "@/components/motion/reveal";
+import Link from "next/link";
+import { ArrowUpRight, CheckCircle2 } from "lucide-react";
+import { PageTitle, Section } from "@/components/layout/section";
 import { Button } from "@/components/ui/button";
 import {
   Accordion,
@@ -13,37 +14,97 @@ import { breadcrumbSchema, faqSchema } from "@/lib/seo/schema";
 import { CONTACT, SITE_CONFIG, SOCIALS } from "@/lib/constants";
 
 export const metadata: Metadata = {
-  title: "Support & funding",
+  title: "Enterprise Solutions, Startup Credits & Funding",
   description:
-    "How to support Nexoral Systems. Core tools stay free; sponsorship and grants fund maintenance, documentation and infrastructure.",
+    "Partner with Nexoral Systems. Commercial tiers for EdgeBalancer, enterprise SLAs, startup program engagement (Claude for Startups), and open-source sponsorship.",
   alternates: { canonical: "/support" },
   openGraph: {
-    title: "Support & funding | Nexoral Systems",
+    title: "Enterprise Solutions & Startup Programs | Nexoral Systems",
     description:
-      "Sponsorship and grants fund the maintenance of free, open-source infrastructure tools.",
+      "Enterprise support, accelerator partnerships, and open-source sponsorship for Nexoral Systems infrastructure.",
     url: `${SITE_CONFIG.url}/support`,
   },
 };
 
+const engagementModels = [
+  {
+    title: "EdgeBalancer Commercial SaaS",
+    description: "Paid tiers for growing organizations deploying multi-origin load balancers on Cloudflare Workers with automated failover and AI agents.",
+    features: [
+      "Unlimited active origins and custom domains",
+      "Sub-millisecond global health probing",
+      "Autonomous AI load balancer architect",
+      "Priority deployment queue and zero cold starts",
+    ],
+    ctaText: "Launch EdgeBalancer",
+    ctaHref: "https://edge.nexoral.in",
+    isExternal: true,
+    highlight: true,
+  },
+  {
+    title: "Startup & Accelerator Programs",
+    description: "Active engagement with technology accelerator programs, institutional credits, and infrastructure grant partners.",
+    features: [
+      "Anthropic Claude for Startups alignment",
+      "Cloudflare for Startups worker integration",
+      "AWS Activate & cloud compute partnerships",
+      "Venture & institutional seed grant evaluation",
+    ],
+    ctaText: "Inquire for Programs",
+    ctaHref: `mailto:${CONTACT.partnerships}`,
+    isExternal: false,
+    highlight: false,
+  },
+  {
+    title: "Enterprise Support & SLAs",
+    description: "Dedicated architectural consulting, custom AxioDB engine builds, and guaranteed response SLAs for production teams.",
+    features: [
+      "Custom on-premise AxioDB storage extensions",
+      "Private LAN NexoralDNS topology consulting",
+      "Guaranteed 24/7 security patch SLA",
+      "Formal corporate invoicing & compliance sign-off",
+    ],
+    ctaText: "Contact Enterprise",
+    ctaHref: `mailto:${CONTACT.general}`,
+    isExternal: false,
+    highlight: false,
+  },
+  {
+    title: "Open-Source Foundation Sponsorship",
+    description: "Community sponsorship backing the maintenance and continuous documentation of our public GitHub repositories.",
+    features: [
+      "Directly funds package releases & CI infrastructure",
+      "Public backer recognition on GitHub READMEs",
+      "Early preview of upcoming system primitives",
+      "Tax-deductible GitHub Sponsors receipts",
+    ],
+    ctaText: "Sponsor on GitHub",
+    ctaHref: SOCIALS.sponsor,
+    isExternal: true,
+    highlight: false,
+  },
+];
+
 const faqs = [
   {
-    question: "What does my sponsorship pay for?",
+    question: "How do startup credit programs (like Claude for Startups) support Nexoral?",
     answer:
-      "Ongoing maintenance of existing tools, documentation and install guides, security fixes, and the infrastructure needed to build and release software. It does not pay for locking features behind a paywall.",
+      "Credits from programs like Anthropic Claude for Startups power the intelligent agent layer in EdgeBalancer (which autonomously generates, validates, and provisions Cloudflare Worker load balancing code based on natural language specifications) and support our internal research on autonomous systems infrastructure.",
   },
   {
-    question: "Will the tools stay free?",
+    question: "Is EdgeBalancer self-hosted or SaaS?",
     answer:
-      "Yes. The core tools are released under OSI-approved open-source licenses and will remain free to use and self-host.",
+      "EdgeBalancer operates as a zero-friction SaaS control plane at edge.nexoral.in. It provisions and deploys load balancer Workers directly into YOUR Cloudflare account. Your traffic never proxies through our servers, ensuring 100% data sovereignty and zero latency penalty.",
   },
   {
-    question: "Can organisations fund or partner with Nexoral?",
-    answer: `Yes. For grants, sponsorship agreements or support contracts, email us and we can provide the company details and an invoice. Write to ${CONTACT.general}.`,
+    question: "Can companies sign commercial support contracts with Nexoral Systems?",
+    answer:
+      "Yes. Nexoral Systems is a registered Indian technology enterprise (Udyam MSME, Government of India). We provide commercial services agreements, custom enterprise invoices (GST compliant), and structured SLAs for enterprise deployments.",
   },
   {
-    question: "Do you offer commercial support?",
+    question: "Will the open-source libraries (AxioDB, ContainDB) remain free?",
     answer:
-      "Not as a formal product yet. If you depend on a tool and need dedicated help, get in touch and we can discuss an arrangement.",
+      "Yes, permanently. AxioDB, ContainDB, and NexoralDNS are licensed under OSI-approved open-source licenses (MIT and GPL-3.0) and will always be free to inspect, modify, and self-host.",
   },
 ];
 
@@ -60,75 +121,120 @@ export default function SupportPage() {
         ]}
       />
 
+      {/* Hero Section */}
       <Section className="pt-16 sm:pt-20 lg:pt-24">
-        <PageTitle
-          title="Keep the tools free for everyone."
-          description="Nexoral Systems is funded by sponsorship and grants, not by paywalls. Financial support pays for the unglamorous work that keeps software dependable."
-        />
-        <div className="mt-8 flex flex-wrap gap-2.5">
-          <Button
-            size="lg"
-            render={<a href={SOCIALS.sponsor} target="_blank" rel="noopener noreferrer" />}
-          >
-            Sponsor on GitHub
-          </Button>
-          <Button size="lg" variant="outline" render={<a href={`mailto:${CONTACT.general}`} />}>
-            Contact about funding
-          </Button>
-        </div>
-      </Section>
+        <div className="w-full">
+          <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/20 bg-blue-50 px-3 py-0.5 text-xs font-mono text-blue-700 mb-5 shadow-sm">
+            <span>Commercial Models &amp; Institutional Partnerships</span>
+          </div>
 
-      <Section divider>
-        <SectionHeading title="Where the money goes" className="max-w-xl" />
-        <Stagger className="mt-10 grid gap-x-16 gap-y-9 sm:grid-cols-2">
-          {[
-            { title: "Maintenance", body: "Bug fixes, security patches, and compatibility with new runtimes." },
-            { title: "Documentation", body: "Install guides, API references and troubleshooting that stay current." },
-            { title: "Releases & infrastructure", body: "Build pipelines, package publishing and testing." },
-            { title: "New work", body: "Time to design and ship tools that people actually need." },
-          ].map((item, index) => (
-            <StaggerItem key={item.title} index={index}>
-              <h3 className="font-heading text-lg font-medium tracking-tight">{item.title}</h3>
-              <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
-                {item.body}
-              </p>
-            </StaggerItem>
-          ))}
-        </Stagger>
-      </Section>
-
-      <Section divider tone="panel">
-        <div className="grid gap-12 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
-          <SectionHeading
-            title="Open about how this is funded"
-            description="Today the work is largely self-funded, with sponsorship covering the rest. The intent is to reach sustainable funding while keeping every core tool free."
-            className="max-w-xl"
+          <PageTitle
+            title="Enterprise Solutions &amp; Institutional Programs"
+            description="From commercial SaaS tiers on EdgeBalancer to startup accelerator partnerships (Claude for Startups) and open-source sponsorship."
           />
-          <dl className="divide-y divide-border self-start border-y border-border">
-            {[
-              { term: "Individual support", value: "Sponsor through GitHub to fund maintenance directly." },
-              { term: "Grants & organisations", value: `We can provide company details and an invoice. Write to ${CONTACT.general}.` },
-              { term: "Non-financial help", value: "Documentation, testing and bug reports help just as much." },
-            ].map((row) => (
-              <div key={row.term} className="py-4">
-                <dt className="text-sm font-medium">{row.term}</dt>
-                <dd className="mt-1 text-sm leading-relaxed text-muted-foreground">{row.value}</dd>
-              </div>
-            ))}
-          </dl>
         </div>
       </Section>
 
+      {/* 4 Cards Grid - Spanning Full Width (4 columns) */}
       <Section divider>
-        <SectionHeading title="Questions about support" className="max-w-xl" />
-        <Accordion className="mt-8 max-w-3xl">
-          {faqs.map((faq) => (
-            <AccordionItem key={faq.question}>
-              <AccordionTrigger>{faq.question}</AccordionTrigger>
-              <AccordionContent className="text-muted-foreground">{faq.answer}</AccordionContent>
-            </AccordionItem>
+        <div className="w-full grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {engagementModels.map((model) => (
+            <div
+              key={model.title}
+              className={`glass glass-panel relative flex flex-col justify-between rounded-2xl p-6 border ${
+                model.highlight
+                  ? "border-blue-500/30 shadow-[0_4px_24px_rgba(37,99,235,0.08)]"
+                  : "border-black/[0.08] shadow-[0_4px_20px_rgba(0,0,0,0.03)]"
+              }`}
+            >
+              <div>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-bold text-foreground">{model.title}</h3>
+                  {model.highlight && (
+                    <span className="rounded-full bg-blue-50 border border-blue-200 px-2 py-0.5 text-[10px] font-mono text-blue-700 font-semibold">
+                      Live
+                    </span>
+                  )}
+                </div>
+
+                <p className="mt-3 text-xs sm:text-sm leading-relaxed text-muted-foreground">
+                  {model.description}
+                </p>
+
+                <ul className="mt-5 space-y-2 border-t border-black/[0.06] pt-4 text-xs text-muted-foreground font-mono">
+                  {model.features.map((feat) => (
+                    <li key={feat} className="flex items-start gap-2">
+                      <CheckCircle2 className="size-3.5 text-primary shrink-0 mt-0.5" />
+                      <span>{feat}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="mt-6 pt-3">
+                <Button
+                  className={`w-full ${
+                    model.highlight
+                      ? "bg-primary hover:bg-primary/90 text-white"
+                      : "border-slate-300 bg-white text-foreground hover:bg-slate-50"
+                  }`}
+                  variant={model.highlight ? "default" : "outline"}
+                  render={
+                    <a
+                      href={model.ctaHref}
+                      {...(model.isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                    />
+                  }
+                >
+                  <span>{model.ctaText}</span>
+                  {model.isExternal && <ArrowUpRight className="size-3.5 ml-1.5" />}
+                </Button>
+              </div>
+            </div>
           ))}
-        </Accordion>
+        </div>
+      </Section>
+
+      {/* Program FAQs - Full-Width 2-Column Balanced Grid */}
+      <Section divider tone="panel">
+        <div className="w-full grid gap-10 lg:grid-cols-[22rem_minmax(0,1fr)] lg:gap-16 items-start">
+          <div className="lg:sticky lg:top-24">
+            <span className="font-mono text-xs font-semibold uppercase tracking-wider text-primary">
+              Partnership Details
+            </span>
+            <h2 className="mt-2 text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+              Commercial &amp; Grant Inquiries
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+              Clear guidelines for enterprise teams, grant evaluators, accelerator programs, and cloud credit initiatives.
+            </p>
+            <div className="mt-6">
+              <Button size="sm" variant="outline" className="border-slate-300 bg-white hover:bg-slate-50 text-foreground" render={<Link href="/contact" />}>
+                <span>Contact Enterprise Desk</span>
+                <ArrowUpRight className="ml-1 size-3.5" />
+              </Button>
+            </div>
+          </div>
+
+          <div className="w-full">
+            <Accordion className="space-y-4">
+              {faqs.map((faq, index) => (
+                <AccordionItem
+                  key={faq.question}
+                  value={`faq-${index}`}
+                  className="glass rounded-xl px-5 border border-black/[0.08]"
+                >
+                  <AccordionTrigger className="text-left font-medium text-foreground hover:text-primary py-4">
+                    {faq.question}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-sm leading-relaxed text-muted-foreground pb-4">
+                    {faq.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+        </div>
       </Section>
     </>
   );

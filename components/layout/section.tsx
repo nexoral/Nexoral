@@ -46,12 +46,12 @@ export function PageTitle({
   children?: ReactNode;
 }) {
   return (
-    <Reveal className={cn("max-w-3xl", className)}>
-      <h1 className="font-heading text-[2rem] leading-[1.08] font-medium tracking-[-0.02em] text-balance sm:text-[2.7rem]">
+    <Reveal className={cn("w-full", className)}>
+      <h1 className="font-heading text-[2.25rem] leading-[1.08] font-bold tracking-tight text-balance sm:text-[3.25rem] lg:text-[3.75rem]">
         {title}
       </h1>
       {description ? (
-        <p className="mt-5 max-w-lg text-[1.02rem] leading-relaxed text-muted-foreground">
+        <p className="mt-5 max-w-5xl text-[1.1rem] leading-relaxed text-muted-foreground">
           {description}
         </p>
       ) : null}
@@ -74,17 +74,17 @@ export function SectionHeading({
   children?: ReactNode;
 }) {
   return (
-    <Reveal className={cn("max-w-2xl", className)}>
+    <Reveal className={cn("w-full", className)}>
       <h2
         className={cn(
-          "font-heading text-[1.7rem] leading-[1.15] font-medium tracking-[-0.015em] text-balance sm:text-[2.15rem]",
+          "font-heading text-[1.85rem] leading-[1.15] font-bold tracking-tight text-balance sm:text-[2.35rem]",
           headingClassName
         )}
       >
         {title}
       </h2>
       {description ? (
-        <p className="mt-4 max-w-lg text-[0.95rem] leading-relaxed text-muted-foreground">
+        <p className="mt-4 max-w-5xl text-[1.02rem] leading-relaxed text-muted-foreground">
           {description}
         </p>
       ) : null}

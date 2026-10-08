@@ -26,79 +26,81 @@ export const CATEGORY_LABELS: Record<ProjectCategory, string> = {
 
 export const CATEGORY_ORDER: ProjectCategory[] = ["data", "network", "tooling", "education"];
 
+export interface EdgeBalancerTelemetry {
+  totalUsers: number;
+  totalLoadBalancers: number;
+  totalGateways: number;
+  originsPool: number;
+  activeBalancers: number;
+  activeGateways: number;
+  aiRuns: number;
+  scriptsDeployed: number;
+  status: string;
+  hasPaidUsers: boolean;
+}
+
+export const EDGE_BALANCER_TELEMETRY: EdgeBalancerTelemetry = {
+  totalUsers: 110,
+  totalLoadBalancers: 10,
+  totalGateways: 14,
+  originsPool: 20,
+  activeBalancers: 7,
+  activeGateways: 9,
+  aiRuns: 315,
+  scriptsDeployed: 60,
+  status: "Production Active",
+  hasPaidUsers: true,
+};
+
 export const PROJECT_CATALOG: ProjectCatalogEntry[] = [
+  {
+    repo: "EdgeBalancer",
+    slug: "edgebalancer",
+    category: "network",
+    featured: true,
+    flagship: true,
+    order: 1,
+    liveUrl: "https://edge.nexoral.in",
+    docsUrl: "https://edge.nexoral.in/stats",
+    summary:
+      "Enterprise SaaS control plane deploying Cloudflare Worker load balancers in ~90 seconds. 7 routing algorithms, active health checks, AI agent provisioning, and zero server maintenance.",
+    distribution: "Cloud SaaS",
+  },
   {
     repo: "AxioDB",
     slug: "axiodb",
     category: "data",
     featured: true,
     flagship: true,
-    order: 1,
-    npmPackage: "axiodb",
-    summary:
-      "The embedded database for Node.js. MongoDB-style queries, ACID transactions, encryption — with no native build step and nothing to install.",
-    distribution: "npm",
-  },
-  {
-    repo: "NexoralDNS",
-    slug: "nexoraldns",
-    category: "network",
-    featured: true,
     order: 2,
-    docsUrl: "https://dns.nexoral.in/docs/getting-started",
-    liveUrl: "https://dns.nexoral.in",
+    npmPackage: "axiodb",
+    liveUrl: "https://axiodb.in",
+    docsUrl: "https://axiodb.in",
     summary:
-      "A Docker-based DNS server for office LANs. Monitor, block, reroute and cache queries, with custom domains and analytics.",
-    distribution: "Docker",
-  },
-  {
-    repo: "EdgeBalancer",
-    slug: "edgebalancer",
-    category: "network",
-    featured: true,
-    order: 3,
-    liveUrl: "https://edge.nexoral.in",
-    summary:
-      "A control plane that builds and deploys Cloudflare Worker load balancers from a dashboard — connect an account, set origins, ship.",
-    distribution: "Web",
+      "High-performance embedded database for Node.js 20+ and Bun. MongoDB-style query engine, ACID transactions, and encryption with zero native compilation dependencies.",
+    distribution: "npm",
   },
   {
     repo: "ContainDB",
     slug: "containdb",
     category: "tooling",
     featured: true,
+    order: 3,
+    summary:
+      "High-velocity Go CLI automating containerized database lifecycle (PostgreSQL, MySQL, Redis, MongoDB, MariaDB) with zero Docker Compose friction.",
+    distribution: "Go / Binary",
+  },
+  {
+    repo: "NexoralDNS",
+    slug: "nexoraldns",
+    category: "network",
+    featured: true,
     order: 4,
+    docsUrl: "https://dns.nexoral.in",
+    liveUrl: "https://dns.nexoral.in",
     summary:
-      "A CLI that installs and manages database containers — MongoDB, Redis, MySQL, PostgreSQL, MariaDB — without wrestling with Compose files.",
-    distribution: "Go",
-  },
-  {
-    repo: "BanglaCode",
-    slug: "banglacode",
-    category: "education",
-    featured: false,
-    order: 5,
-    summary:
-      "A Bengali-language programming language and platform for teaching logic and problem-solving to students in Bengal.",
-    distribution: "Go",
-  },
-  {
-    repo: "xpack",
-    slug: "xpack",
-    category: "tooling",
-    featured: false,
-    order: 6,
-    summary: "A universal Linux package builder. Turn a compiled binary into .deb, .rpm and more.",
-    distribution: "Go",
-  },
-  {
-    repo: "ReviewBuddy",
-    slug: "reviewbuddy",
-    category: "tooling",
-    featured: false,
-    order: 7,
-    summary: "A GitHub Action that reviews pull requests in your preferred language and tone.",
-    distribution: "GitHub Action",
+      "Docker-based intelligent LAN DNS management and traffic inspection engine with custom routing, local caching, query filtering, and real-time network telemetry.",
+    distribution: "Docker",
   },
 ];
 
