@@ -1,94 +1,155 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowUpRight, ShieldCheck, Globe, Building2, MessageSquare } from "lucide-react";
 import { PageTitle, Section } from "@/components/layout/section";
 import { COMPANY, COMPLIANCE, CONTACT, SOCIALS } from "@/lib/constants";
 
 export const metadata: Metadata = {
-  title: "Contact",
+  title: "Contact & Corporate Inquiries",
   description:
-    "Contact Nexoral Systems about the products, contributions, sponsorship or funding, and about privacy and data protection.",
+    "Contact Nexoral Systems for enterprise solutions, accelerator partnerships, technical support, or statutory DPDPA compliance inquiries.",
   alternates: { canonical: "/contact" },
 };
 
 const channels = [
-  { label: "General & support", value: CONTACT.general, href: `mailto:${CONTACT.general}` },
-  { label: "Owner", value: CONTACT.founder, href: `mailto:${CONTACT.founder}` },
-  { label: "GitHub", value: "github.com/nexoral", href: SOCIALS.github },
-  { label: "Sponsorship", value: "github.com/sponsors/nexoral", href: SOCIALS.sponsor },
+  {
+    label: "Enterprise Solutions & Partnerships",
+    value: CONTACT.partnerships,
+    href: `mailto:${CONTACT.partnerships}`,
+    description: "SaaS licensing, enterprise SLAs, startup accelerator programs, and cloud credit initiatives.",
+    icon: Building2,
+  },
+  {
+    label: "Technical Support & General Inquiries",
+    value: CONTACT.general,
+    href: `mailto:${CONTACT.general}`,
+    description: "EdgeBalancer questions, AxioDB developer feedback, bug reports, and package releases.",
+    icon: MessageSquare,
+  },
+  {
+    label: "Founder & Lead Architect",
+    value: CONTACT.founder,
+    href: `mailto:${CONTACT.founder}`,
+    description: "Direct channel to Ankan Saha for systems architecture consultations and investor conversations.",
+    icon: Globe,
+  },
+  {
+    label: "DPDPA 2023 Statutory Grievances",
+    value: COMPLIANCE.email,
+    href: `mailto:${COMPLIANCE.email}?subject=DPDPA%20Data%20Principal%20Request`,
+    description: "Exercise statutory Data Principal rights: access, correction, erasure, grievance, or nomination.",
+    icon: ShieldCheck,
+  },
 ];
 
 const socials = [
-  { label: "X", href: SOCIALS.x },
+  { label: "GitHub (@nexoral)", href: SOCIALS.github },
+  { label: "Founder GitHub (@AnkanSaha)", href: SOCIALS.founderGithub },
+  { label: "X / Twitter", href: SOCIALS.x },
   { label: "LinkedIn", href: SOCIALS.linkedin },
-  { label: "Instagram", href: SOCIALS.instagram },
-  { label: "Dev.to", href: SOCIALS.devto },
-  { label: "Discord", href: SOCIALS.discord },
+  { label: "Discord Community", href: SOCIALS.discord },
 ];
 
 export default function ContactPage() {
   return (
     <Section className="pt-16 sm:pt-20 lg:pt-24">
-      <PageTitle
-        title="Get in touch"
-        description="Questions about a product, a contribution, sponsorship or a grant. Email is the fastest way to reach the company."
-      />
-
-      <div className="mt-12 grid gap-x-16 gap-y-10 lg:grid-cols-2">
-        <div className="divide-y divide-border border-y border-border">
-          {channels.map((channel) => (
-            <a
-              key={channel.label}
-              href={channel.href}
-              target={channel.href.startsWith("http") ? "_blank" : undefined}
-              rel={channel.href.startsWith("http") ? "noopener noreferrer" : undefined}
-              className="group flex items-center justify-between gap-6 py-4"
-            >
-              <span className="text-sm text-muted-foreground">{channel.label}</span>
-              <span className="text-sm font-medium transition-colors group-hover:text-primary">
-                {channel.value}
-              </span>
-            </a>
-          ))}
+      <div className="w-full">
+        <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/20 bg-blue-50 px-3 py-0.5 text-xs font-mono text-blue-700 mb-5 shadow-sm">
+          <span>Official Corporate Channels</span>
         </div>
 
-        <div>
-          <dl className="divide-y divide-border border-y border-border">
-            {[
-              { term: "Company", value: COMPANY.legalName },
-              { term: "Owner", value: COMPANY.owner },
-              { term: "Based in", value: COMPANY.location },
-              { term: "Privacy & grievances", value: COMPLIANCE.email },
-            ].map((row) => (
-              <div key={row.term} className="flex items-baseline justify-between gap-6 py-4">
-                <dt className="text-sm text-muted-foreground">{row.term}</dt>
-                <dd className="text-right text-sm font-medium">{row.value}</dd>
-              </div>
-            ))}
-          </dl>
+        <PageTitle
+          title="Direct Corporate &amp; Technical Channels"
+          description="Whether you are deploying EdgeBalancer at scale, exploring enterprise support, or submitting statutory DPDPA privacy inquiries."
+        />
+      </div>
 
-          <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm">
-            {socials.map((social) => (
+      <div className="mt-12 grid gap-8 lg:grid-cols-2">
+        {/* Contact Cards */}
+        <div className="space-y-4">
+          {channels.map((channel) => {
+            const Icon = channel.icon;
+            return (
               <a
-                key={social.label}
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary underline decoration-primary/30 underline-offset-4 hover:decoration-primary"
+                key={channel.label}
+                href={channel.href}
+                className="glass glass-panel group flex flex-col justify-between rounded-xl p-5 border border-black/[0.08] hover:border-primary/40 transition-all block"
               >
-                {social.label}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex size-7 items-center justify-center rounded-md bg-primary/10 text-primary">
+                      <Icon className="size-3.5" />
+                    </div>
+                    <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
+                      {channel.label}
+                    </span>
+                  </div>
+                  <ArrowUpRight className="size-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                </div>
+
+                <p className="mt-2.5 text-xs text-muted-foreground leading-relaxed">
+                  {channel.description}
+                </p>
+
+                <div className="mt-4 pt-3 border-t border-black/[0.06] font-mono text-xs text-primary font-medium">
+                  {channel.value}
+                </div>
               </a>
-            ))}
+            );
+          })}
+        </div>
+
+        {/* Corporate Registry Sidecar */}
+        <div className="space-y-6">
+          <div className="glass glass-panel rounded-2xl p-7 border border-black/[0.08] shadow-[0_4px_24px_rgba(0,0,0,0.04)]">
+            <h3 className="font-mono text-xs uppercase tracking-wider text-primary font-semibold">
+              Corporate Headquarters &amp; Registration
+            </h3>
+
+            <dl className="mt-5 divide-y divide-black/[0.06]">
+              {[
+                { term: "Legal Entity", value: COMPANY.legalName },
+                { term: "Classification", value: COMPANY.incorporationStatus },
+                { term: "Registration Document", value: COMPANY.incorporationCert },
+                { term: "Incorporated", value: COMPANY.foundedLabel },
+                { term: "Headquarters", value: COMPANY.location },
+                { term: "Lead Officer", value: `${COMPANY.owner} (${COMPANY.ownerRole})` },
+                { term: "DPDPA Grievance SLA", value: `Within ${COMPLIANCE.responseSlaDays} days (Statutory)` },
+              ].map((row) => (
+                <div key={row.term} className="flex items-baseline justify-between gap-4 py-3 text-xs">
+                  <dt className="text-muted-foreground font-mono">{row.term}</dt>
+                  <dd className="text-right font-medium text-foreground">{row.value}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
 
-          <p className="mt-6 max-w-md text-sm leading-relaxed text-muted-foreground">
-            For privacy requests and grievances, see{" "}
-            <a
-              href="/data-protection"
-              className="text-primary underline decoration-primary/30 underline-offset-4 hover:decoration-primary"
-            >
-              data protection &amp; grievance
-            </a>
-            . The company is not affiliated with any other organisation.
-          </p>
+          {/* Social and Community Grid */}
+          <div className="glass rounded-xl p-6 border border-black/[0.08]">
+            <h4 className="text-xs font-mono uppercase text-muted-foreground font-semibold">
+              Verified Social &amp; Code Repositories
+            </h4>
+            <div className="mt-4 flex flex-wrap gap-2.5">
+              {socials.map((s) => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-lg border border-black/[0.08] bg-slate-100/70 px-3 py-1.5 text-xs font-mono text-slate-700 hover:bg-slate-200/80 hover:text-foreground transition-all"
+                >
+                  {s.label} ↗
+                </a>
+              ))}
+            </div>
+            <p className="mt-5 text-xs text-muted-foreground/80 leading-relaxed">
+              For complete details on personal data handling, see our statutory{" "}
+              <Link href="/data-protection" className="text-primary hover:underline">
+                DPDPA 2023 Data Protection Notice
+              </Link>
+              .
+            </p>
+          </div>
         </div>
       </div>
     </Section>

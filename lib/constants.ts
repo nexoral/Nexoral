@@ -72,34 +72,39 @@ export const SITE_CONFIG = {
   name: "Nexoral Systems",
   shortName: "Nexoral",
   url: "https://nexoral.in",
-  tagline: "Open-source software you can run yourself",
+  tagline: "Software Tools & Cloud Infrastructure Built for Developers",
   description:
-    "Nexoral Systems is an independent software company owned and run by Ankan Saha. It builds free, open-source infrastructure and developer tools — led by AxioDB, the embedded database for Node.js.",
+    "Nexoral Systems is an independent technology company building open-source databases, developer tools, and cloud edge infrastructure without vendor lock-in.",
   orgGitHub: `https://github.com/${GITHUB_ORG}`,
   founder: {
     name: "Ankan Saha",
-    role: "Owner & lead maintainer",
+    role: "Founder & Chief Systems Architect",
     url: "https://ankan.in",
     github: "https://github.com/AnkanSaha",
   },
+  flagshipSaaS: "https://edge.nexoral.in",
 };
 
 export const COMPANY = {
   legalName: "Nexoral Systems",
+  incorporationStatus: "Registered Enterprise (Udyam MSME, Government of India)",
+  incorporationCert: "Udyam Registration Certificate",
   owner: "Ankan Saha",
-  ownerRole: "Owner & lead maintainer",
+  ownerRole: "Founder & Chief Systems Architect",
   foundedDate: "2025-09-03",
   foundedLabel: "2025",
   location: "Kolkata, West Bengal, India",
   country: "India",
   countryCode: "IN",
+  businessModel: "Dual-Engine: Open-Core Primitives + Managed Edge Cloud",
   orgDescription:
-    "Nexoral Systems is an open-source driven technology organization focused on building next-generation infrastructure and developer tools.",
+    "Nexoral Systems is an Indian systems engineering company incorporated in 2025. It develops production-grade developer infrastructure, embedded data stores, and serverless edge control planes for high-availability cloud workloads.",
 };
 
 export const CONTACT = {
   general: "support@nexoral.in",
   founder: "connect@ankan.in",
+  partnerships: "partners@nexoral.in",
 };
 
 /**
@@ -108,10 +113,10 @@ export const CONTACT = {
  * grievances under Sections 11–14 and Rule 14 of the DPDP Rules, 2025.
  */
 export const COMPLIANCE = {
-  noticeVersion: "1.0",
+  noticeVersion: "2.0",
   noticeEffective: "8 October 2026",
   officerName: "Ankan Saha",
-  officerRole: "Grievance Officer & data protection contact",
+  officerRole: "Grievance Officer & Data Protection Contact",
   email: CONTACT.general,
   responseSlaDays: 90,
   boardName: "Data Protection Board of India",
@@ -128,29 +133,35 @@ export const SOCIALS = {
   devto: "https://dev.to/theankansaha",
   discord: "https://discord.gg/theankansaha",
   sponsor: `https://github.com/sponsors/${GITHUB_ORG}`,
+  edgeBalancer: "https://edge.nexoral.in",
 };
 
 export const NAV_LINKS = [
   { href: "/projects", label: "Products" },
   { href: "/about", label: "Company" },
-  { href: "/founder", label: "Owner" },
-  { href: "/support", label: "Support" },
+  { href: "/founder", label: "Founder" },
+  { href: "/support", label: "Enterprise & Credits" },
+  { href: "/contact", label: "Contact" },
 ];
 
 export const FOOTER_LINKS = {
   products: [
-    { href: "/projects", label: "All products" },
-    { href: "/license", label: "Licenses" },
+    { href: "/projects/edgebalancer", label: "EdgeBalancer (SaaS)" },
+    { href: "/projects/axiodb", label: "AxioDB (Embedded)" },
+    { href: "/projects/containdb", label: "ContainDB (Go CLI)" },
+    { href: "/projects/nexoraldns", label: "NexoralDNS (LAN DNS)" },
+    { href: "/projects", label: "All Products" },
   ],
   company: [
-    { href: "/about", label: "About" },
-    { href: "/founder", label: "Owner" },
-    { href: "/support", label: "Support & funding" },
-    { href: "/contact", label: "Contact" },
+    { href: "/about", label: "About Nexoral" },
+    { href: "/founder", label: "Founder Profile" },
+    { href: "/support", label: "Enterprise & Credits" },
+    { href: "/contact", label: "Inquiries & Contact" },
+    { href: "/license", label: "Open-Source Licenses" },
   ],
   legal: [
-    { href: "/privacy", label: "Privacy notice" },
-    { href: "/terms", label: "Terms of use" },
-    { href: "/data-protection", label: "Data protection & grievance" },
+    { href: "/privacy", label: "Privacy Notice" },
+    { href: "/terms", label: "Terms of Service" },
+    { href: "/data-protection", label: "DPDPA 2023 & Grievance" },
   ],
 };

@@ -87,7 +87,7 @@ export function ReadmeViewer({ readme }: { readme: string | null }) {
   }
 
   return (
-    <div className="max-w-[30rem]">
+    <div className="w-full">
       <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
         {normalizeReadme(readme)}
       </ReactMarkdown>

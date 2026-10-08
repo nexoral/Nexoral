@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowUpRight, ShieldCheck } from "lucide-react";
 import { PageTitle, Section } from "@/components/layout/section";
+import { Button } from "@/components/ui/button";
 import { COMPANY, COMPLIANCE, CONTACT } from "@/lib/constants";
 
 export const metadata: Metadata = {
@@ -13,17 +15,20 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <Section className="pt-16 sm:pt-20 lg:pt-24">
-      <PageTitle
-        title="Privacy notice"
-        description={`How ${COMPANY.legalName} handles personal data when you use nexoral.in. Effective ${COMPLIANCE.noticeEffective} · Version ${COMPLIANCE.noticeVersion}.`}
-      />
+      <div className="w-full">
+        <PageTitle
+          title="Privacy notice"
+          description={`How ${COMPANY.legalName} handles personal data when you use nexoral.in. Effective ${COMPLIANCE.noticeEffective} · Version ${COMPLIANCE.noticeVersion}.`}
+        />
+      </div>
 
-      <div className="prose-legal mt-12">
-        <p>
-          This notice is given under Section 5 of the Digital Personal Data Protection Act, 2023
-          (&ldquo;DPDPA&rdquo;). It explains what personal data {COMPANY.legalName} collects, why,
-          how long it is kept, and how you can exercise your rights.
-        </p>
+      <div className="mt-12 grid gap-10 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-14 items-start">
+        <div className="prose-legal">
+          <p>
+            This notice is given under Section 5 of the Digital Personal Data Protection Act, 2023
+            (&ldquo;DPDPA&rdquo;). It explains what personal data {COMPANY.legalName} collects, why,
+            how long it is kept, and how you can exercise your rights.
+          </p>
 
         <h2>In short</h2>
         <ul>
@@ -36,7 +41,7 @@ export default function PrivacyPage() {
 
         <h2>Who is responsible</h2>
         <p>
-          {COMPANY.legalName}, owned and run by {COMPANY.owner}, is the Data Fiduciary for any
+          {COMPANY.legalName} ({COMPANY.incorporationStatus}), directed by {COMPANY.owner} ({COMPANY.ownerRole}), is the Data Fiduciary for any
           personal data processed through this website. Questions and requests go to the contact
           listed at the end of this notice.
         </p>
@@ -150,6 +155,71 @@ export default function PrivacyPage() {
           <a href={`mailto:${CONTACT.general}`}>{CONTACT.general}</a>.
         </p>
       </div>
-    </Section>
-  );
+
+      {/* Sticky Statutory Overview Sidebar */}
+      <aside className="space-y-6 lg:sticky lg:top-24">
+        <div className="glass glass-panel rounded-2xl p-6 border border-black/[0.08] shadow-[0_4px_24px_rgba(0,0,0,0.04)]">
+          <div className="flex items-center gap-2 font-mono text-xs text-primary font-semibold uppercase tracking-wider">
+            <ShieldCheck className="size-4" />
+            <span>Statutory Compliance</span>
+          </div>
+
+          <dl className="mt-4 divide-y divide-black/[0.06] text-xs">
+            {[
+              { term: "Data Fiduciary", value: COMPANY.legalName },
+              { term: "Governing Law", value: "DPDPA 2023 & Rules 2025" },
+              { term: "Notice Version", value: `v${COMPLIANCE.noticeVersion}` },
+              { term: "Effective Date", value: COMPLIANCE.noticeEffective },
+              { term: "Analytics / Ads", value: "None (Zero Tracking)" },
+              { term: "Grievance Officer", value: COMPLIANCE.officerName },
+              { term: "Statutory SLA", value: `Within ${COMPLIANCE.responseSlaDays} days` },
+            ].map((item) => (
+              <div key={item.term} className="flex items-baseline justify-between gap-4 py-2.5">
+                <dt className="text-muted-foreground font-mono">{item.term}</dt>
+                <dd className="text-right font-medium text-foreground">{item.value}</dd>
+              </div>
+            ))}
+          </dl>
+
+          <div className="mt-5 pt-4 border-t border-black/[0.06]">
+            <Button
+              className="w-full bg-primary hover:bg-primary/90 text-white font-medium shadow-sm"
+              size="sm"
+              render={<Link href="/data-protection" />}
+            >
+              <span>Exercise DPDPA Rights</span>
+              <ArrowUpRight className="size-3.5 ml-1" />
+            </Button>
+          </div>
+        </div>
+
+        <div className="glass rounded-xl p-5 border border-black/[0.08]">
+          <h3 className="text-xs font-mono font-semibold text-muted-foreground uppercase">
+            Related Governance Docs
+          </h3>
+          <ul className="mt-3 space-y-2 text-xs">
+            <li>
+              <Link href="/data-protection" className="text-primary hover:underline flex items-center justify-between">
+                <span>Data Protection &amp; Redressal</span>
+                <span>→</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/terms" className="text-primary hover:underline flex items-center justify-between">
+                <span>Terms of Use</span>
+                <span>→</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/license" className="text-primary hover:underline flex items-center justify-between">
+                <span>Open Source Licenses</span>
+                <span>→</span>
+              </Link>
+            </li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </Section>
+);
 }

@@ -8,6 +8,7 @@ import { Section } from "@/components/layout/section";
 import { Reveal } from "@/components/motion/reveal";
 import { ReadmeViewer } from "@/components/project/readme-viewer";
 import { CodeBlock } from "@/components/site/code-block";
+import { TelemetryDeck } from "@/components/site/telemetry-deck";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Button } from "@/components/ui/button";
 import { getProjectDetailBySlug } from "@/lib/projects/service";
@@ -92,7 +93,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
         </nav>
 
         <Reveal pop className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-3xl">
+          <div className="flex-1 max-w-4xl lg:max-w-5xl">
             <p className="font-mono text-[12px] text-muted-foreground">{project.categoryLabel}</p>
             <h1 className="mt-3 font-heading text-[2.2rem] leading-[1.05] font-medium tracking-[-0.02em] text-balance sm:text-[3rem]">
               {project.name}
@@ -134,19 +135,19 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
         </Reveal>
 
         <Reveal delay={0.1}>
-          <dl className="mt-12 grid grid-cols-2 gap-x-6 gap-y-8 border-y border-border py-8 sm:grid-cols-4">
+          <dl className="glass glass-panel mt-12 grid grid-cols-2 divide-y sm:divide-y-0 divide-x divide-slate-200 rounded-xl border border-black/[0.08] p-2 sm:grid-cols-4 shadow-[0_4px_24px_rgba(0,0,0,0.04)]">
           {[
-            { term: "Stars", value: formatNumber(project.stars) },
+            { term: "GitHub Stars", value: formatNumber(project.stars) },
             { term: "Forks", value: formatNumber(project.forks) },
             {
-              term: "Downloads / month",
-              value: project.npm ? formatCompact(project.npm.lastMonth) : "N/A",
+              term: project.slug === "edgebalancer" ? "Live Users" : project.npm ? "Downloads / Month" : "Category",
+              value: project.slug === "edgebalancer" ? "110 (Paid Live)" : project.npm ? formatCompact(project.npm.lastMonth) : project.distribution,
             },
-            { term: "Last updated", value: formatDate(project.lastPushedAt) },
+            { term: "Last Activity", value: formatDate(project.lastPushedAt) },
           ].map((stat) => (
-            <div key={stat.term} className="flex flex-col">
-              <dt className="text-[13px] leading-snug text-muted-foreground">{stat.term}</dt>
-              <dd className="order-first font-heading text-2xl font-medium tracking-tight">
+            <div key={stat.term} className="flex flex-col p-4">
+              <dt className="text-xs font-mono text-muted-foreground uppercase">{stat.term}</dt>
+              <dd className="order-first font-mono text-2xl font-bold tracking-tight text-foreground mb-1">
                 {stat.value}
               </dd>
             </div>
@@ -160,6 +161,12 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
           <span>{status}</span>
           <span>{project.distribution}</span>
         </div>
+
+        {project.slug === "edgebalancer" && (
+          <Reveal delay={0.15} className="mt-12">
+            <TelemetryDeck />
+          </Reveal>
+        )}
       </Section>
 
       <Section className="pt-0">
