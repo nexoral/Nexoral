@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Boxes, Database, Languages, Network, ShieldCheck, Terminal } from "lucide-react";
 import { Section, SectionHeading } from "@/components/layout/section";
-import { StatGrid } from "@/components/site/stat";
-import { ProjectCard } from "@/components/site/project-card";
+import { FactStrip } from "@/components/site/stat";
+import { ProductCatalogue } from "@/components/site/product-row";
+import { CodeBlock } from "@/components/site/code-block";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getFeaturedProjects, getOrgStats, getProjectsByCategory } from "@/lib/projects/service";
-import { ORG_DETAILS, SITE_CONFIG, SOCIALS } from "@/lib/constants";
+import { getFlagshipProject, getOrgStats, getProjectViews } from "@/lib/projects/service";
+import { COMPANY, CONTACT, SITE_CONFIG, SOCIALS } from "@/lib/constants";
 import { formatCompact } from "@/lib/npm/fetchers";
 import { formatNumber } from "@/lib/format";
 
@@ -17,209 +16,196 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
-const categoryBlurbs: Record<string, string> = {
-  network: "Self-hosted DNS and edge routing you fully control.",
-  data: "Embedded storage that runs inside your own process.",
-  tooling: "Utilities that remove repetitive setup and release work.",
-  education: "Programming made accessible in regional languages.",
-};
-
 const principles = [
   {
-    icon: Boxes,
     title: "Open source, not open-washed",
-    body: "Every project ships under a real OSI license (MIT or GPL-3.0) with the source on GitHub.",
+    body: "Every project ships under an OSI license (MIT or GPL-3.0) with the full source on GitHub.",
   },
   {
-    icon: Terminal,
-    title: "Self-hostable by default",
-    body: "Run the tools on your own machine or LAN. No mandatory account, no forced cloud.",
+    title: "Self-hosted first",
+    body: "The tools run on your machine or your LAN. No account to create, no cloud you have to depend on.",
   },
   {
-    icon: ShieldCheck,
-    title: "No tracking, no telemetry",
-    body: "The tools and this site do not phone home or sell your data.",
+    title: "No telemetry",
+    body: "The software does not phone home, and this site does not collect anything about you.",
   },
   {
-    icon: Database,
-    title: "Documentation first",
-    body: "Install guides, API references and troubleshooting are treated as part of the product.",
+    title: "Documentation is part of the product",
+    body: "Install guides, API references and troubleshooting are maintained alongside the code, not after it.",
   },
 ];
 
+const flagshipCode = `// An embedded database, in-process. No server to run.
+import { AxioDB } from "axiodb";
+
+const db = new AxioDB({
+  path: "./data",
+  encryption: true,
+  encryptionKey: process.env.AXIODB_KEY,
+});
+
+await db.collection("orders").insert({
+  id: "1042",
+  total: 2499,
+  status: "paid",
+});
+
+const paid = await db.collection("orders").find({
+  status: "paid",
+});`;
+
 export default async function Home() {
-  const [stats, featured, groups] = await Promise.all([
+  const [stats, projects, flagship] = await Promise.all([
     getOrgStats(),
-    getFeaturedProjects(4),
-    getProjectsByCategory(),
+    getProjectViews(),
+    getFlagshipProject(),
   ]);
 
   return (
     <>
-      <Section className="pt-20 sm:pt-24 lg:pt-28">
-        <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
-          Open source · Free forever
-        </p>
-        <h1 className="max-w-5xl text-4xl leading-[1.05] font-semibold tracking-tight text-balance sm:text-6xl lg:text-7xl">
-          Free, open-source tools for real infrastructure problems.
-        </h1>
-        <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
-          {SITE_CONFIG.name} is an independent, Udyam-registered software micro-enterprise from
-          West Bengal, India — building DNS, database, deployment and packaging tools for
-          developers, small businesses, and home networks.
-        </p>
-        <div className="mt-8 flex flex-wrap gap-3">
-          <Button size="lg" render={<Link href="/projects" />}>
-            Explore projects <ArrowRight />
-          </Button>
-          <Button size="lg" variant="outline" render={<Link href="/support" />}>
-            Support the work
-          </Button>
-        </div>
-      </Section>
+      <Section className="pt-16 sm:pt-20 lg:pt-24">
+        <div className="grid gap-12 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:gap-16">
+          <div>
+            <p className="font-mono text-[12px] text-muted-foreground">
+              Independent software company · Open source since {COMPANY.foundedLabel}
+            </p>
+            <h1 className="mt-5 font-heading text-[2.6rem] leading-[1.05] font-medium tracking-[-0.02em] text-balance sm:text-[3.5rem] lg:text-[3.9rem]">
+              Software you can run yourself.
+            </h1>
+            <p className="mt-6 max-w-xl text-[1.02rem] leading-relaxed text-muted-foreground">
+              {SITE_CONFIG.name} builds free, open-source infrastructure and developer tools. No
+              accounts, no telemetry, no lock-in: just software you install and own.
+            </p>
+            <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
+              <Button size="lg" render={<Link href="/projects" />}>
+                Browse products
+              </Button>
+              <a
+                href={SOCIALS.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                View the source on GitHub
+              </a>
+            </div>
+          </div>
 
-      <Section className="py-0">
-        <StatGrid
-          stats={[
-            { value: formatNumber(stats.totalProjects), label: "Open-source projects" },
+          {flagship ? (
+            <div>
+              <CodeBlock code={flagshipCode} title="app.ts" meta={`${flagship.name} / npm`} />
+              <div className="mt-3 flex flex-wrap items-baseline justify-between gap-2 font-mono text-[11.5px] text-muted-foreground">
+                <Link
+                  href={`/projects/${flagship.slug}`}
+                  className="text-foreground transition-colors hover:text-primary"
+                >
+                  {flagship.name}: {flagship.summary.split(".")[0]}.
+                </Link>
+                {flagship.npm ? <span>{formatCompact(flagship.npm.lastMonth)}/mo</span> : null}
+              </div>
+            </div>
+          ) : null}
+        </div>
+
+        <FactStrip
+          className="mt-16 sm:mt-20"
+          facts={[
+            { value: formatNumber(stats.totalProjects), label: "Open-source products" },
             { value: formatNumber(stats.totalStars), label: "GitHub stars" },
-            { value: `${formatCompact(stats.totalNpmYear)}`, label: "npm downloads / year" },
-            {
-              value: "100%",
-              label: "Free & open source",
-            },
+            { value: formatCompact(stats.totalNpmYear), label: "npm downloads / year" },
+            { value: "MIT · GPL-3.0", label: "Licenses used" },
           ]}
         />
       </Section>
 
-      <Section>
-        <SectionHeading
-          eyebrow="What we build"
-          title="Four areas, one principle: keep it free and usable"
-          description="We group our work by the problem it solves — not by how it sounds in a pitch deck."
-        />
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {groups.map((group) => {
-            const Icon =
-              group.category === "network"
-                ? Network
-                : group.category === "data"
-                  ? Database
-                  : group.category === "education"
-                    ? Languages
-                    : Terminal;
-            return (
-              <Card key={group.category} className="bg-card/50">
-                <CardHeader>
-                  <Icon className="size-5 text-primary" />
-                  <CardTitle>{group.label}</CardTitle>
-                </CardHeader>
-                <CardContent className="text-sm text-muted-foreground">
-                  {categoryBlurbs[group.category]}
-                  <span className="mt-3 block text-xs text-muted-foreground/80">
-                    {group.projects.length} project{group.projects.length === 1 ? "" : "s"}
-                  </span>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      </Section>
-
-      <Section bordered>
-        <div className="flex flex-wrap items-end justify-between gap-4">
+      <Section divider>
+        <div className="flex flex-wrap items-end justify-between gap-6">
           <SectionHeading
-            eyebrow="Featured"
-            title="Flagship projects"
-            description="The tools people reach for most, with live data pulled from GitHub and npm."
-            className="mb-0"
+            title="Products"
+            description="Every project below is free to use and open source. The numbers are pulled live from GitHub and npm."
+            className="max-w-xl"
           />
-          <Button variant="ghost" render={<Link href="/projects" />}>
-            View all <ArrowRight />
-          </Button>
+          <a
+            href={SITE_CONFIG.orgGitHub}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            All repositories on GitHub
+          </a>
         </div>
-        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {featured.map((project) => (
-            <ProjectCard key={project.slug} project={project} />
-          ))}
+        <div className="mt-10">
+          <ProductCatalogue projects={projects} />
         </div>
       </Section>
 
-      <Section bordered>
-        <SectionHeading eyebrow="How we work" title="What 'free and open' actually means here" />
-        <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2">
+      <Section divider tone="panel">
+        <SectionHeading
+          title="How these tools are built"
+          description="The same four commitments apply to everything published under the Nexoral name."
+          className="max-w-xl"
+        />
+        <div className="mt-10 grid gap-x-16 gap-y-9 sm:grid-cols-2">
           {principles.map((principle) => (
-            <div key={principle.title} className="flex gap-4">
-              <principle.icon className="mt-0.5 size-5 shrink-0 text-primary" />
-              <div>
-                <h3 className="font-medium">{principle.title}</h3>
-                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                  {principle.body}
-                </p>
-              </div>
+            <div key={principle.title}>
+              <h3 className="font-heading text-lg font-medium tracking-tight">{principle.title}</h3>
+              <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
+                {principle.body}
+              </p>
             </div>
           ))}
         </div>
       </Section>
 
-      <Section bordered>
-        <div className="grid gap-10 lg:grid-cols-2">
+      <Section divider>
+        <div className="grid gap-12 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
           <div>
             <SectionHeading
-              eyebrow="How Nexoral is run"
-              title="Independent, transparent, and accountable"
-              description="Nexoral Systems is a registered micro-enterprise, not a closed product company. One maintainer leads the work with help from contributors, and the books stay visible."
+              title="One owner, in the open"
+              description={`${SITE_CONFIG.name} is owned and run by ${COMPANY.owner}. It is small on purpose: decisions are made in public, the source lives on GitHub, and support goes straight into maintenance.`}
+              className="max-w-xl"
             />
-            <div className="flex flex-wrap gap-3">
-              <Button variant="outline" render={<Link href="/about" />}>
-                About Nexoral
-              </Button>
-              <Button variant="outline" render={<Link href="/support" />}>
-                Funding & support
-              </Button>
+            <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
+              <Link
+                href="/about"
+                className="text-sm font-medium text-primary underline decoration-primary/30 underline-offset-4 transition-colors hover:decoration-primary"
+              >
+                About the company
+              </Link>
+              <Link
+                href="/founder"
+                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                Meet the owner
+              </Link>
             </div>
           </div>
-          <Card className="bg-card/50">
-            <CardContent className="space-y-4 pt-6 text-sm">
-              <div className="flex justify-between gap-4">
-                <span className="text-muted-foreground">Legal enterprise</span>
-                <span className="text-right font-medium">{ORG_DETAILS.legalName}</span>
+
+          <dl className="divide-y divide-border border-y border-border">
+            {[
+              { term: "Owner", value: COMPANY.owner },
+              { term: "Founded", value: COMPANY.foundedLabel },
+              { term: "Based in", value: COMPANY.location },
+              { term: "Contact", value: CONTACT.general },
+            ].map((row) => (
+              <div key={row.term} className="flex items-baseline justify-between gap-6 py-4">
+                <dt className="text-sm text-muted-foreground">{row.term}</dt>
+                <dd className="text-right text-sm font-medium">{row.value}</dd>
               </div>
-              <div className="flex justify-between gap-4">
-                <span className="text-muted-foreground">Type</span>
-                <span className="text-right font-medium">{ORG_DETAILS.enterpriseType}</span>
-              </div>
-              <div className="flex justify-between gap-4">
-                <span className="text-muted-foreground">Udyam number</span>
-                <span className="text-right font-mono text-xs font-medium">
-                  {ORG_DETAILS.udyamNumber}
-                </span>
-              </div>
-              <div className="flex justify-between gap-4">
-                <span className="text-muted-foreground">Registered from</span>
-                <span className="text-right font-medium">
-                  {ORG_DETAILS.address.locality}, {ORG_DETAILS.address.region},{" "}
-                  {ORG_DETAILS.address.countryName}
-                </span>
-              </div>
-              <div className="flex justify-between gap-4">
-                <span className="text-muted-foreground">Incorporated</span>
-                <span className="text-right font-medium">{ORG_DETAILS.incorporationLabel}</span>
-              </div>
-            </CardContent>
-          </Card>
+            ))}
+          </dl>
         </div>
       </Section>
 
-      <Section bordered>
-        <div className="flex flex-col items-start justify-between gap-6 rounded-2xl border border-border bg-gradient-to-br from-primary/10 to-transparent p-8 sm:p-10 lg:flex-row lg:items-center">
+      <Section divider>
+        <div className="flex flex-col items-start justify-between gap-6 border border-border bg-card p-8 sm:p-10 lg:flex-row lg:items-center">
           <div>
-            <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+            <h2 className="font-heading text-2xl font-medium tracking-tight sm:text-[1.75rem]">
               Keep the tools free
             </h2>
             <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              Core tools will always be free. Sponsorship and grants pay for maintenance,
-              documentation, and infrastructure — so the work stays independent.
+              Core tools stay free. Sponsorship pays for maintenance, documentation and the
+              infrastructure to build and release, so the work stays independent.
             </p>
           </div>
           <Button

@@ -40,21 +40,23 @@ export function MobileNav() {
       {open ? (
         <div
           id="mobile-menu"
-          className="fixed inset-x-0 top-16 bottom-0 z-40 flex flex-col gap-1 border-t border-border bg-background px-4 py-6"
+          className="fixed inset-x-0 top-14 bottom-0 z-40 flex flex-col border-t border-border bg-background px-5 py-6 sm:top-16"
         >
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setOpen(false)}
-              className="rounded-lg px-3 py-3 text-lg font-medium text-foreground/90 hover:bg-muted"
-            >
-              {link.label}
-            </Link>
-          ))}
+          <nav className="flex flex-col" aria-label="Mobile">
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setOpen(false)}
+                className="border-b border-border py-4 font-heading text-xl font-medium tracking-tight"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
           <div className="mt-auto flex flex-col gap-3 pt-6">
             <Button render={<a href={SOCIALS.sponsor} target="_blank" rel="noopener noreferrer" />}>
-              Support the work
+              Sponsor the work
             </Button>
             <Button
               variant="outline"
