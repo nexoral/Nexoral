@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageTitle, Section, SectionHeading } from "@/components/layout/section";
+import { Stagger, StaggerItem } from "@/components/motion/reveal";
 import { Button } from "@/components/ui/button";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbSchema, personSchema } from "@/lib/seo/schema";
@@ -169,18 +170,18 @@ export default function FounderPage() {
 
       <Section divider>
         <SectionHeading title="Tools and areas" className="max-w-xl" />
-        <div className="mt-10 grid gap-x-16 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
-          {skills.map((group) => (
-            <div key={group.category}>
+        <Stagger className="mt-10 grid gap-x-16 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
+          {skills.map((group, index) => (
+            <StaggerItem key={group.category} index={index}>
               <h3 className="text-sm font-medium">{group.category}</h3>
               <ul className="mt-3 space-y-1.5 text-sm text-muted-foreground">
                 {group.items.map((item) => (
                   <li key={item}>{item}</li>
                 ))}
               </ul>
-            </div>
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
       </Section>
     </>
   );

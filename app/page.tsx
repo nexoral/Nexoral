@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Check } from "lucide-react";
 import { Section, SectionHeading } from "@/components/layout/section";
+import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { FactStrip } from "@/components/site/stat";
 import { ProductCatalogue } from "@/components/site/product-row";
-import { CodeBlock } from "@/components/site/code-block";
 import { Button } from "@/components/ui/button";
-import { getFlagshipProject, getOrgStats, getProjectViews } from "@/lib/projects/service";
+import { getOrgStats, getProjectViews } from "@/lib/projects/service";
 import { COMPANY, CONTACT, SITE_CONFIG, SOCIALS } from "@/lib/constants";
 import { formatCompact } from "@/lib/npm/fetchers";
 import { formatNumber } from "@/lib/format";
@@ -35,37 +36,33 @@ const principles = [
   },
 ];
 
-const flagshipCode = `// An embedded database, in-process. No server to run.
-import { AxioDB } from "axiodb";
-
-const db = new AxioDB({
-  path: "./data",
-  encryption: true,
-  encryptionKey: process.env.AXIODB_KEY,
-});
-
-await db.collection("orders").insert({
-  id: "1042",
-  total: 2499,
-  status: "paid",
-});
-
-const paid = await db.collection("orders").find({
-  status: "paid",
-});`;
+const operatingModel = [
+  {
+    title: "Independent",
+    body: "A software company, not a charity, trust or NGO.",
+  },
+  {
+    title: "Owner-run",
+    body: "Owned and run by one person, who answers for every decision.",
+  },
+  {
+    title: "Sponsor-funded",
+    body: "Kept free by sponsorship, never by paywalls or advertising.",
+  },
+  {
+    title: "Built in the open",
+    body: "Source, issues and decisions live in public on GitHub.",
+  },
+];
 
 export default async function Home() {
-  const [stats, projects, flagship] = await Promise.all([
-    getOrgStats(),
-    getProjectViews(),
-    getFlagshipProject(),
-  ]);
+  const [stats, projects] = await Promise.all([getOrgStats(), getProjectViews()]);
 
   return (
     <>
       <Section className="pt-16 sm:pt-20 lg:pt-24">
         <div className="grid gap-12 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:gap-16">
-          <div>
+          <Reveal pop>
             <p className="font-mono text-[12px] text-muted-foreground">
               Independent software company · Open source since {COMPANY.foundedLabel}
             </p>
@@ -89,33 +86,47 @@ export default async function Home() {
                 View the source on GitHub
               </a>
             </div>
-          </div>
+          </Reveal>
 
-          {flagship ? (
-            <div>
-              <CodeBlock code={flagshipCode} title="app.ts" meta={`${flagship.name} / npm`} />
-              <div className="mt-3 flex flex-wrap items-baseline justify-between gap-2 font-mono text-[11.5px] text-muted-foreground">
-                <Link
-                  href={`/projects/${flagship.slug}`}
-                  className="text-foreground transition-colors hover:text-primary"
-                >
-                  {flagship.name}: {flagship.summary.split(".")[0]}.
-                </Link>
-                {flagship.npm ? <span>{formatCompact(flagship.npm.lastMonth)}/mo</span> : null}
-              </div>
+          <Reveal delay={0.12}>
+            <div className="glass rounded-2xl p-7 sm:p-9">
+              <p className="font-mono text-[12px] text-muted-foreground">How the company works</p>
+              <h2 className="mt-4 font-heading text-[1.6rem] leading-snug font-medium tracking-tight text-balance sm:text-[1.85rem]">
+                Owned, funded, and built in the open.
+              </h2>
+              <Stagger className="mt-7 space-y-4">
+                {operatingModel.map((item, index) => (
+                  <StaggerItem key={item.title} index={index} className="flex gap-3">
+                    <Check className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+                    <div>
+                      <p className="text-sm font-medium">{item.title}</p>
+                      <p className="mt-0.5 text-sm leading-relaxed text-muted-foreground">
+                        {item.body}
+                      </p>
+                    </div>
+                  </StaggerItem>
+                ))}
+              </Stagger>
+              <Link
+                href="/about"
+                className="mt-7 inline-flex text-sm font-medium text-primary underline decoration-primary/30 underline-offset-4 transition-colors hover:decoration-primary"
+              >
+                About the company
+              </Link>
             </div>
-          ) : null}
+          </Reveal>
         </div>
 
-        <FactStrip
-          className="mt-16 sm:mt-20"
-          facts={[
-            { value: formatNumber(stats.totalProjects), label: "Open-source products" },
-            { value: formatNumber(stats.totalStars), label: "GitHub stars" },
-            { value: formatCompact(stats.totalNpmYear), label: "npm downloads / year" },
-            { value: "MIT · GPL-3.0", label: "Licenses used" },
-          ]}
-        />
+        <Reveal className="mt-16 sm:mt-20">
+          <FactStrip
+            facts={[
+              { value: formatNumber(stats.totalProjects), label: "Open-source products" },
+              { value: formatNumber(stats.totalStars), label: "GitHub stars" },
+              { value: formatCompact(stats.totalNpmYear), label: "npm downloads / year" },
+              { value: "MIT · GPL-3.0", label: "Licenses used" },
+            ]}
+          />
+        </Reveal>
       </Section>
 
       <Section divider>
@@ -145,16 +156,16 @@ export default async function Home() {
           description="The same four commitments apply to everything published under the Nexoral name."
           className="max-w-xl"
         />
-        <div className="mt-10 grid gap-x-16 gap-y-9 sm:grid-cols-2">
-          {principles.map((principle) => (
-            <div key={principle.title}>
+        <Stagger className="mt-10 grid gap-x-16 gap-y-9 sm:grid-cols-2">
+          {principles.map((principle, index) => (
+            <StaggerItem key={principle.title} index={index}>
               <h3 className="font-heading text-lg font-medium tracking-tight">{principle.title}</h3>
               <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
                 {principle.body}
               </p>
-            </div>
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
       </Section>
 
       <Section divider>
@@ -181,24 +192,26 @@ export default async function Home() {
             </div>
           </div>
 
-          <dl className="divide-y divide-border border-y border-border">
-            {[
-              { term: "Owner", value: COMPANY.owner },
-              { term: "Founded", value: COMPANY.foundedLabel },
-              { term: "Based in", value: COMPANY.location },
-              { term: "Contact", value: CONTACT.general },
-            ].map((row) => (
-              <div key={row.term} className="flex items-baseline justify-between gap-6 py-4">
-                <dt className="text-sm text-muted-foreground">{row.term}</dt>
-                <dd className="text-right text-sm font-medium">{row.value}</dd>
-              </div>
-            ))}
-          </dl>
+          <Reveal delay={0.1}>
+            <dl className="divide-y divide-border border-y border-border">
+              {[
+                { term: "Owner", value: COMPANY.owner },
+                { term: "Founded", value: COMPANY.foundedLabel },
+                { term: "Based in", value: COMPANY.location },
+                { term: "Contact", value: CONTACT.general },
+              ].map((row) => (
+                <div key={row.term} className="flex items-baseline justify-between gap-6 py-4">
+                  <dt className="text-sm text-muted-foreground">{row.term}</dt>
+                  <dd className="text-right text-sm font-medium">{row.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </Reveal>
         </div>
       </Section>
 
       <Section divider>
-        <div className="flex flex-col items-start justify-between gap-6 border border-border bg-card p-8 sm:p-10 lg:flex-row lg:items-center">
+        <Reveal className="glass flex flex-col items-start justify-between gap-6 p-8 sm:p-10 lg:flex-row lg:items-center">
           <div>
             <h2 className="font-heading text-2xl font-medium tracking-tight sm:text-[1.75rem]">
               Keep the tools free
@@ -214,7 +227,7 @@ export default async function Home() {
           >
             Sponsor on GitHub
           </Button>
-        </div>
+        </Reveal>
       </Section>
     </>
   );

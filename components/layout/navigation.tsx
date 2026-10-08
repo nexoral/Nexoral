@@ -7,7 +7,7 @@ import { MobileNav } from "@/components/layout/mobile-nav";
 
 export function Navigation() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/85 backdrop-blur-md">
+    <header className="glass glass-strong sticky top-0 z-50 w-full border-x-0 border-t-0">
       <div className="shell flex h-14 items-center justify-between gap-6 sm:h-16">
         <Link
           href="/"

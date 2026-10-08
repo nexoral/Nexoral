@@ -4,6 +4,8 @@ import "./globals.css";
 import { SITE_CONFIG } from "@/lib/constants";
 import { Navigation } from "@/components/layout/navigation";
 import { Footer } from "@/components/layout/footer";
+import { AmbientBackground } from "@/components/layout/ambient-background";
+import { MotionProvider } from "@/components/motion/motion-provider";
 import { JsonLd } from "@/components/seo/json-ld";
 import { organizationSchema, websiteSchema } from "@/lib/seo/schema";
 
@@ -93,17 +95,20 @@ export default function RootLayout({
       <body
         className={`${plexSans.variable} ${plexSerif.variable} ${plexMono.variable} flex min-h-screen flex-col`}
       >
-        <a
-          href="#main"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-[60] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-primary-foreground"
-        >
-          Skip to content
-        </a>
-        <Navigation />
-        <main id="main" className="flex-1">
-          {children}
-        </main>
-        <Footer />
+        <AmbientBackground />
+        <MotionProvider>
+          <a
+            href="#main"
+            className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-[60] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-primary-foreground"
+          >
+            Skip to content
+          </a>
+          <Navigation />
+          <main id="main" className="flex-1">
+            {children}
+          </main>
+          <Footer />
+        </MotionProvider>
         <JsonLd data={[organizationSchema(), websiteSchema()]} />
       </body>
     </html>

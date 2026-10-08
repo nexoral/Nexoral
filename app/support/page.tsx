@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PageTitle, Section, SectionHeading } from "@/components/layout/section";
+import { Stagger, StaggerItem } from "@/components/motion/reveal";
 import { Button } from "@/components/ui/button";
 import {
   Accordion,
@@ -79,21 +80,21 @@ export default function SupportPage() {
 
       <Section divider>
         <SectionHeading title="Where the money goes" className="max-w-xl" />
-        <div className="mt-10 grid gap-x-16 gap-y-9 sm:grid-cols-2">
+        <Stagger className="mt-10 grid gap-x-16 gap-y-9 sm:grid-cols-2">
           {[
             { title: "Maintenance", body: "Bug fixes, security patches, and compatibility with new runtimes." },
             { title: "Documentation", body: "Install guides, API references and troubleshooting that stay current." },
             { title: "Releases & infrastructure", body: "Build pipelines, package publishing and testing." },
             { title: "New work", body: "Time to design and ship tools that people actually need." },
-          ].map((item) => (
-            <div key={item.title}>
+          ].map((item, index) => (
+            <StaggerItem key={item.title} index={index}>
               <h3 className="font-heading text-lg font-medium tracking-tight">{item.title}</h3>
               <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
                 {item.body}
               </p>
-            </div>
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
       </Section>
 
       <Section divider tone="panel">

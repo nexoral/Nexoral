@@ -26,7 +26,7 @@ export function CodeBlock({
   return (
     <figure
       className={cn(
-        "overflow-hidden rounded-md border border-border bg-card",
+        "glass overflow-hidden rounded-md",
         className
       )}
     >
