@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { Section, SectionHeading } from "@/components/layout/section";
-import { Card, CardContent } from "@/components/ui/card";
+import { PageTitle, Section, SectionHeading } from "@/components/layout/section";
 import { Button } from "@/components/ui/button";
 import {
   Accordion,
@@ -15,7 +14,7 @@ import { CONTACT, SITE_CONFIG, SOCIALS } from "@/lib/constants";
 export const metadata: Metadata = {
   title: "Support & funding",
   description:
-    "How to support Nexoral Systems. Core tools stay free — sponsorship and grants fund maintenance, documentation, and infrastructure.",
+    "How to support Nexoral Systems. Core tools stay free; sponsorship and grants fund maintenance, documentation and infrastructure.",
   alternates: { canonical: "/support" },
   openGraph: {
     title: "Support & funding | Nexoral Systems",
@@ -38,10 +37,7 @@ const faqs = [
   },
   {
     question: "Can organisations fund or partner with Nexoral?",
-    answer:
-      "Yes. For grants, sponsorship agreements, or support contracts, email us and we can provide the registration details and an invoice. Write to " +
-      CONTACT.general +
-      ".",
+    answer: `Yes. For grants, sponsorship agreements or support contracts, email us and we can provide the company details and an invoice. Write to ${CONTACT.general}.`,
   },
   {
     question: "Do you offer commercial support?",
@@ -63,13 +59,12 @@ export default function SupportPage() {
         ]}
       />
 
-      <Section className="pt-20 sm:pt-24">
-        <SectionHeading
-          eyebrow="Support & funding"
-          title="Keep the tools free for everyone"
+      <Section className="pt-16 sm:pt-20 lg:pt-24">
+        <PageTitle
+          title="Keep the tools free for everyone."
           description="Nexoral Systems is funded by sponsorship and grants, not by paywalls. Financial support pays for the unglamorous work that keeps software dependable."
         />
-        <div className="flex flex-wrap gap-3">
+        <div className="mt-8 flex flex-wrap gap-2.5">
           <Button
             size="lg"
             render={<a href={SOCIALS.sponsor} target="_blank" rel="noopener noreferrer" />}
@@ -82,66 +77,50 @@ export default function SupportPage() {
         </div>
       </Section>
 
-      <Section bordered>
-        <SectionHeading eyebrow="What funding supports" title="Where the money goes" />
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <Section divider>
+        <SectionHeading title="Where the money goes" className="max-w-xl" />
+        <div className="mt-10 grid gap-x-16 gap-y-9 sm:grid-cols-2">
           {[
             { title: "Maintenance", body: "Bug fixes, security patches, and compatibility with new runtimes." },
-            { title: "Documentation", body: "Install guides, API references, and troubleshooting that stay current." },
-            { title: "Releases & infra", body: "Build pipelines, package publishing, and testing." },
+            { title: "Documentation", body: "Install guides, API references and troubleshooting that stay current." },
+            { title: "Releases & infrastructure", body: "Build pipelines, package publishing and testing." },
             { title: "New work", body: "Time to design and ship tools that people actually need." },
           ].map((item) => (
-            <Card key={item.title} className="bg-card/50">
-              <CardContent className="pt-6">
-                <h3 className="font-medium">{item.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.body}</p>
-              </CardContent>
-            </Card>
+            <div key={item.title}>
+              <h3 className="font-heading text-lg font-medium tracking-tight">{item.title}</h3>
+              <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
+                {item.body}
+              </p>
+            </div>
           ))}
         </div>
       </Section>
 
-      <Section bordered>
-        <div className="grid gap-10 lg:grid-cols-2">
-          <div>
-            <SectionHeading
-              eyebrow="Transparency"
-              title="Open about how this is funded"
-              description="Today the work is largely self-funded, with sponsorship covering the rest. The intent is to reach sustainable funding while keeping every core tool free."
-            />
-            <p className="text-sm leading-relaxed text-muted-foreground">
-              If you would like more detail before committing, email us and we will share the
-              current state of the project and how support is used.
-            </p>
-          </div>
-          <Card className="bg-card/50">
-            <CardContent className="space-y-4 pt-6 text-sm">
-              <div>
-                <h3 className="font-medium">Individual support</h3>
-                <p className="mt-1 text-muted-foreground">
-                  Sponsor through GitHub to fund maintenance directly.
-                </p>
+      <Section divider tone="panel">
+        <div className="grid gap-12 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
+          <SectionHeading
+            title="Open about how this is funded"
+            description="Today the work is largely self-funded, with sponsorship covering the rest. The intent is to reach sustainable funding while keeping every core tool free."
+            className="max-w-xl"
+          />
+          <dl className="divide-y divide-border self-start border-y border-border">
+            {[
+              { term: "Individual support", value: "Sponsor through GitHub to fund maintenance directly." },
+              { term: "Grants & organisations", value: `We can provide company details and an invoice. Write to ${CONTACT.general}.` },
+              { term: "Non-financial help", value: "Documentation, testing and bug reports help just as much." },
+            ].map((row) => (
+              <div key={row.term} className="py-4">
+                <dt className="text-sm font-medium">{row.term}</dt>
+                <dd className="mt-1 text-sm leading-relaxed text-muted-foreground">{row.value}</dd>
               </div>
-              <div>
-                <h3 className="font-medium">Grants & organisations</h3>
-                <p className="mt-1 text-muted-foreground">
-                  We can provide registration details and an invoice. Write to {CONTACT.general}.
-                </p>
-              </div>
-              <div>
-                <h3 className="font-medium">Non-financial help</h3>
-                <p className="mt-1 text-muted-foreground">
-                  Documentation, testing, and bug reports help just as much.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+            ))}
+          </dl>
         </div>
       </Section>
 
-      <Section bordered>
-        <SectionHeading eyebrow="FAQ" title="Questions about support" />
-        <Accordion className="max-w-3xl">
+      <Section divider>
+        <SectionHeading title="Questions about support" className="max-w-xl" />
+        <Accordion className="mt-8 max-w-3xl">
           {faqs.map((faq) => (
             <AccordionItem key={faq.question}>
               <AccordionTrigger>{faq.question}</AccordionTrigger>

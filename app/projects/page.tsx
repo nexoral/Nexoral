@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { Section, SectionHeading } from "@/components/layout/section";
-import { ProjectCard } from "@/components/site/project-card";
+import { PageTitle, Section } from "@/components/layout/section";
+import { ProductCatalogue } from "@/components/site/product-row";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbSchema, itemListSchema } from "@/lib/seo/schema";
 import { getProjectViews, getProjectsByCategory } from "@/lib/projects/service";
@@ -9,14 +9,14 @@ import { SITE_CONFIG } from "@/lib/constants";
 export const revalidate = 43200;
 
 export const metadata: Metadata = {
-  title: "Projects",
+  title: "Products",
   description:
-    "All open-source projects by Nexoral Systems — DNS and network tools, embedded databases, and developer utilities. Live data from GitHub and npm.",
+    "Every open-source product from Nexoral Systems: databases, DNS and network tools, and developer utilities. Live data from GitHub and npm.",
   alternates: { canonical: "/projects" },
   openGraph: {
-    title: "Projects | Nexoral Systems",
+    title: "Products | Nexoral Systems",
     description:
-      "All open-source projects by Nexoral Systems — DNS and network tools, embedded databases, and developer utilities.",
+      "Every open-source product from Nexoral Systems: databases, DNS and network tools, and developer utilities.",
     url: `${SITE_CONFIG.url}/projects`,
   },
 };
@@ -36,24 +36,23 @@ export default async function ProjectsPage() {
           ),
           breadcrumbSchema([
             { name: "Home", url: SITE_CONFIG.url },
-            { name: "Projects", url: `${SITE_CONFIG.url}/projects` },
+            { name: "Products", url: `${SITE_CONFIG.url}/projects` },
           ]),
         ]}
       />
 
-      <Section className="pt-20 sm:pt-24">
-        <SectionHeading
-          eyebrow="Projects"
-          title="Open-source tools, grouped by the problem they solve"
-          description="Every project below is free to use and open source. Stars, activity and download counts are pulled live from GitHub and npm."
+      <Section className="pt-16 sm:pt-20 lg:pt-24">
+        <PageTitle
+          title="Products"
+          description="Every project is free to use and open source, grouped by the problem it solves. Stars and download counts are pulled live from GitHub and npm."
         />
-        <p className="text-sm text-muted-foreground">
-          {all.length} active projects ·{" "}
+        <p className="mt-6 text-sm text-muted-foreground">
+          {all.length} products ·{" "}
           <a
             href={SITE_CONFIG.orgGitHub}
             target="_blank"
             rel="noopener noreferrer"
-            className="font-medium text-primary underline underline-offset-2"
+            className="text-primary underline decoration-primary/30 underline-offset-4 transition-colors hover:decoration-primary"
           >
             View the organization on GitHub
           </a>
@@ -61,12 +60,15 @@ export default async function ProjectsPage() {
       </Section>
 
       {groups.map((group) => (
-        <Section key={group.category} bordered>
-          <h2 className="mb-6 text-xl font-semibold tracking-tight sm:text-2xl">{group.label}</h2>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {group.projects.map((project) => (
-              <ProjectCard key={project.slug} project={project} />
-            ))}
+        <Section key={group.category} divider size="tight">
+          <div className="grid gap-8 lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-12">
+            <div className="lg:pt-7">
+              <h2 className="font-heading text-xl font-medium tracking-tight">{group.label}</h2>
+              <p className="mt-2 text-sm text-muted-foreground">
+                {group.projects.length} project{group.projects.length === 1 ? "" : "s"}
+              </p>
+            </div>
+            <ProductCatalogue projects={group.projects} />
           </div>
         </Section>
       ))}

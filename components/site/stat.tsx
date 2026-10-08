@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-export function Stat({
+export function Fact({
   value,
   label,
   className,
@@ -10,29 +10,31 @@ export function Stat({
   className?: string;
 }) {
   return (
-    <div className={cn("flex flex-col gap-1", className)}>
-      <span className="text-3xl font-semibold tracking-tight sm:text-4xl">{value}</span>
-      <span className="text-sm text-muted-foreground">{label}</span>
+    <div className={cn("flex flex-col", className)}>
+      <dt className="text-[13px] leading-snug text-muted-foreground">{label}</dt>
+      <dd className="order-first font-heading text-2xl font-medium tracking-tight sm:text-[1.75rem]">
+        {value}
+      </dd>
     </div>
   );
 }
 
-export function StatGrid({
-  stats,
+export function FactStrip({
+  facts,
   className,
 }: {
-  stats: Array<{ value: string; label: string }>;
+  facts: Array<{ value: string; label: string }>;
   className?: string;
 }) {
   return (
     <dl
       className={cn(
-        "grid grid-cols-2 gap-6 border-y border-border py-8 sm:grid-cols-4",
+        "grid grid-cols-2 gap-x-6 gap-y-8 border-y border-border py-8 sm:grid-cols-4",
         className
       )}
     >
-      {stats.map((stat) => (
-        <Stat key={stat.label} value={stat.value} label={stat.label} />
+      {facts.map((fact) => (
+        <Fact key={fact.label} value={fact.value} label={fact.label} />
       ))}
     </dl>
   );

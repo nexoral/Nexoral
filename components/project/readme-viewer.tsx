@@ -1,22 +1,31 @@
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { cn } from "@/lib/utils";
+import { normalizeReadme } from "@/lib/markdown/normalize";
 
 const components: Components = {
   h1: ({ children }) => (
-    <h2 className="mt-10 mb-4 border-b border-border pb-2 text-2xl font-semibold tracking-tight first:mt-0">
+    <h2 className="mt-10 mb-4 border-b border-border pb-2 font-heading text-2xl font-medium tracking-tight first:mt-0">
       {children}
     </h2>
   ),
   h2: ({ children }) => (
-    <h3 className="mt-9 mb-3 text-xl font-semibold tracking-tight first:mt-0">{children}</h3>
+    <h2 className="mt-10 mb-4 border-b border-border pb-2 font-heading text-2xl font-medium tracking-tight first:mt-0">
+      {children}
+    </h2>
   ),
   h3: ({ children }) => (
-    <h4 className="mt-7 mb-2 text-lg font-semibold first:mt-0">{children}</h4>
+    <h3 className="mt-9 mb-3 font-heading text-xl font-medium tracking-tight first:mt-0">{children}</h3>
   ),
-  h4: ({ children }) => <h5 className="mt-6 mb-2 font-semibold first:mt-0">{children}</h5>,
+  h4: ({ children }) => (
+    <h4 className="mt-7 mb-2 font-heading text-lg font-medium first:mt-0">{children}</h4>
+  ),
+  h5: ({ children }) => <h5 className="mt-6 mb-2 font-medium first:mt-0">{children}</h5>,
+  h6: ({ children }) => <h6 className="mt-6 mb-2 font-medium first:mt-0">{children}</h6>,
   p: ({ children }) => (
-    <p className="my-4 text-sm leading-relaxed text-muted-foreground first:mt-0">{children}</p>
+    <p className="my-4 text-[0.95rem] leading-relaxed text-muted-foreground first:mt-0">
+      {children}
+    </p>
   ),
   a: ({ href, children }) => (
     <a
@@ -29,10 +38,12 @@ const components: Components = {
     </a>
   ),
   ul: ({ children }) => (
-    <ul className="my-4 list-disc space-y-2 pl-5 text-sm text-muted-foreground">{children}</ul>
+    <ul className="my-4 list-disc space-y-2 pl-5 text-[0.95rem] text-muted-foreground">{children}</ul>
   ),
   ol: ({ children }) => (
-    <ol className="my-4 list-decimal space-y-2 pl-5 text-sm text-muted-foreground">{children}</ol>
+    <ol className="my-4 list-decimal space-y-2 pl-5 text-[0.95rem] text-muted-foreground">
+      {children}
+    </ol>
   ),
   li: ({ children }) => <li className="leading-relaxed">{children}</li>,
   blockquote: ({ children }) => (
@@ -76,9 +87,9 @@ export function ReadmeViewer({ readme }: { readme: string | null }) {
   }
 
   return (
-    <div className="max-w-none">
+    <div className="max-w-[30rem]">
       <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
-        {readme}
+        {normalizeReadme(readme)}
       </ReactMarkdown>
     </div>
   );

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { IBM_Plex_Mono, IBM_Plex_Sans, IBM_Plex_Serif } from "next/font/google";
 import "./globals.css";
 import { SITE_CONFIG } from "@/lib/constants";
 import { Navigation } from "@/components/layout/navigation";
@@ -7,22 +7,31 @@ import { Footer } from "@/components/layout/footer";
 import { JsonLd } from "@/components/seo/json-ld";
 import { organizationSchema, websiteSchema } from "@/lib/seo/schema";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const plexSans = IBM_Plex_Sans({
+  variable: "--font-plex-sans",
   subsets: ["latin"],
+  weight: ["400", "500", "600"],
   display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const plexSerif = IBM_Plex_Serif({
+  variable: "--font-plex-serif",
   subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  display: "swap",
+});
+
+const plexMono = IBM_Plex_Mono({
+  variable: "--font-plex-mono",
+  subsets: ["latin"],
+  weight: ["400", "500"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_CONFIG.url),
   title: {
-    default: "Nexoral Systems — Free & open-source infrastructure tools",
+    default: "Nexoral Systems | open-source software you can run yourself",
     template: "%s | Nexoral Systems",
   },
   description: SITE_CONFIG.description,
@@ -31,13 +40,12 @@ export const metadata: Metadata = {
     "Nexoral",
     "Nexoral Systems",
     "open source",
-    "infrastructure tools",
+    "self-hosted",
     "developer tools",
-    "DNS server",
-    "self-hosted DNS",
+    "infrastructure software",
+    "AxioDB",
     "embedded database",
     "Node.js database",
-    "AxioDB",
     "NexoralDNS",
     "ContainDB",
     "Ankan Saha",
@@ -52,12 +60,12 @@ export const metadata: Metadata = {
     locale: "en_IN",
     url: SITE_CONFIG.url,
     siteName: SITE_CONFIG.name,
-    title: "Nexoral Systems — Free & open-source infrastructure tools",
+    title: "Nexoral Systems | open-source software you can run yourself",
     description: SITE_CONFIG.description,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Nexoral Systems — Free & open-source infrastructure tools",
+    title: "Nexoral Systems | open-source software you can run yourself",
     description: SITE_CONFIG.description,
     creator: "@theankansaha",
   },
@@ -70,7 +78,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#ffffff",
+  themeColor: "#f4f5f2",
   width: "device-width",
   initialScale: 1,
 };
@@ -82,10 +90,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} flex min-h-screen flex-col`}>
+      <body
+        className={`${plexSans.variable} ${plexSerif.variable} ${plexMono.variable} flex min-h-screen flex-col`}
+      >
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-[60] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-primary-foreground"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-[60] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-primary-foreground"
         >
           Skip to content
         </a>

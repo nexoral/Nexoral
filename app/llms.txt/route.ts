@@ -10,7 +10,7 @@ export function GET() {
     const entries = PROJECT_CATALOG.filter((entry) => entry.category === category);
     if (entries.length === 0) return "";
     const lines = entries
-      .map((entry) => `- [${entry.repo}](${base}/projects/${entry.slug})`)
+      .map((entry) => `- [${entry.repo}](${base}/projects/${entry.slug}): ${entry.summary}`)
       .join("\n");
     return `### ${CATEGORY_LABELS[category]}\n${lines}`;
   })
@@ -19,22 +19,24 @@ export function GET() {
 
   const body = `# ${SITE_CONFIG.name}
 
-> ${SITE_CONFIG.name} is an independent, Udyam-registered software micro-enterprise from West Bengal, India, building free and open-source infrastructure tools — DNS, databases, deployment and packaging — for developers, small businesses, and home networks. Core tools are free, self-hostable, and funded by sponsorship and grants rather than paywalls.
+> ${SITE_CONFIG.name} is an independent software company owned and run by Ankan Saha. It builds free, open-source infrastructure and developer tools, led by AxioDB, the embedded database for Node.js. The tools are self-hostable, send no telemetry, and are funded by sponsorship rather than paywalls.
 
 ## Core pages
-- [Home](${base}/) : Overview of Nexoral Systems and its tools
-- [Projects](${base}/projects) : All open-source projects with live repository data
-- [About](${base}/about) : Mission, who it serves, and how it is run
+- [Home](${base}/) : What the company is and the full product catalogue
+- [Products](${base}/projects) : All open-source products with live repository data
+- [Company](${base}/about) : Mission, who it serves, and how it is run
+- [Owner](${base}/founder) : Ankan Saha, owner and lead maintainer
 - [Support](${base}/support) : How to sponsor or fund the work
-- [Founder](${base}/founder) : Ankan Saha, founder and lead maintainer
 - [Contact](${base}/contact)
 
-## Projects
+## Products
 ${projectsByCategory}
 
 ## Optional
 - [Licenses](${base}/license)
-- [Privacy](${base}/privacy)
+- [Privacy notice](${base}/privacy)
+- [Terms of use](${base}/terms)
+- [Data protection & grievance](${base}/data-protection)
 - [GitHub organization](${SITE_CONFIG.orgGitHub})
 `;
 

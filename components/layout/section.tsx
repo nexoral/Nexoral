@@ -1,54 +1,93 @@
-import type { ComponentProps } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 interface SectionProps extends ComponentProps<"section"> {
-  bordered?: boolean;
-  containerClassName?: string;
+  /** Draw a hairline above the section to separate it from the one before. */
+  divider?: boolean;
+  /** `panel` tints the whole band so a section reads as a distinct surface. */
+  tone?: "base" | "panel";
+  size?: "default" | "tight";
 }
 
 export function Section({
   className,
-  containerClassName,
-  bordered = false,
+  divider = false,
+  tone = "base",
+  size = "default",
   children,
   ...props
 }: SectionProps) {
   return (
     <section
       className={cn(
-        "w-full px-4 py-14 sm:px-6 sm:py-16 lg:px-10 lg:py-20 xl:px-16",
-        bordered && "border-t border-border",
+        "w-full",
+        size === "default" ? "py-16 sm:py-20 lg:py-24" : "py-10 sm:py-12",
+        divider && "border-t border-border",
+        tone === "panel" && "bg-card",
         className
       )}
       {...props}
     >
-      <div className={cn("mx-auto w-full max-w-[1600px]", containerClassName)}>{children}</div>
+      <div className="shell">{children}</div>
     </section>
   );
 }
 
-export function SectionHeading({
-  eyebrow,
+export function PageTitle({
   title,
   description,
   className,
+  children,
 }: {
-  eyebrow?: string;
-  title: string;
-  description?: string;
+  title: ReactNode;
+  description?: ReactNode;
   className?: string;
+  children?: ReactNode;
 }) {
   return (
-    <div className={cn("mb-10 max-w-3xl", className)}>
-      {eyebrow ? (
-        <p className="mb-3 text-sm font-medium tracking-wide text-primary uppercase">{eyebrow}</p>
-      ) : null}
-      <h2 className="text-3xl font-semibold tracking-tight text-balance sm:text-4xl">{title}</h2>
+    <div className={cn("max-w-3xl", className)}>
+      <h1 className="font-heading text-[2rem] leading-[1.08] font-medium tracking-[-0.02em] text-balance sm:text-[2.7rem]">
+        {title}
+      </h1>
       {description ? (
-        <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
+        <p className="mt-5 max-w-lg text-[1.02rem] leading-relaxed text-muted-foreground">
           {description}
         </p>
       ) : null}
+      {children}
+    </div>
+  );
+}
+
+export function SectionHeading({
+  title,
+  description,
+  className,
+  headingClassName,
+  children,
+}: {
+  title: ReactNode;
+  description?: ReactNode;
+  className?: string;
+  headingClassName?: string;
+  children?: ReactNode;
+}) {
+  return (
+    <div className={cn("max-w-2xl", className)}>
+      <h2
+        className={cn(
+          "font-heading text-[1.7rem] leading-[1.15] font-medium tracking-[-0.015em] text-balance sm:text-[2.15rem]",
+          headingClassName
+        )}
+      >
+        {title}
+      </h2>
+      {description ? (
+        <p className="mt-4 max-w-lg text-[0.95rem] leading-relaxed text-muted-foreground">
+          {description}
+        </p>
+      ) : null}
+      {children}
     </div>
   );
 }

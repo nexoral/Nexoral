@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Section, SectionHeading } from "@/components/layout/section";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { PageTitle, Section, SectionHeading } from "@/components/layout/section";
 import {
   Accordion,
   AccordionContent,
@@ -11,36 +9,43 @@ import {
 } from "@/components/ui/accordion";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbSchema, faqSchema } from "@/lib/seo/schema";
-import { CONTACT, ORG_DETAILS, SITE_CONFIG } from "@/lib/constants";
+import { COMPANY, CONTACT, SITE_CONFIG } from "@/lib/constants";
 
 export const metadata: Metadata = {
-  title: "About",
+  title: "Company",
   description:
-    "How Nexoral Systems is run: an independent, Udyam-registered micro-enterprise publishing free and open-source infrastructure tools. Mission, principles, and transparency.",
+    "Nexoral Systems is an independent software company owned and run by Ankan Saha, publishing free and open-source infrastructure tools led by AxioDB.",
   alternates: { canonical: "/about" },
   openGraph: {
-    title: "About | Nexoral Systems",
+    title: "Company | Nexoral Systems",
     description:
-      "An independent, Udyam-registered micro-enterprise publishing free and open-source infrastructure tools.",
+      "An independent software company, owned and run by one person, publishing free and open-source infrastructure tools.",
     url: `${SITE_CONFIG.url}/about`,
   },
 };
+
+const audiences = [
+  { title: "Developers", body: "Tools you can drop into a project and reason about, with the source in front of you." },
+  { title: "Small businesses", body: "Self-hosted software without per-seat pricing or a cloud account you cannot leave." },
+  { title: "Home networks", body: "DNS control and filtering that stays on your own hardware." },
+  { title: "Schools & learners", body: "Inclusive tooling, including a programming language taught in Bengali." },
+];
 
 const faqs = [
   {
     question: "Is Nexoral a nonprofit or an NGO?",
     answer:
-      "No. Nexoral Systems is a registered micro-enterprise under Udyam (Govt. of India). It is not a registered charity, trust, or NGO, and we do not claim that status. What we do commit to is giving our core tools away for free under real open-source licenses.",
+      "No. Nexoral Systems is an independent software company owned and run by Ankan Saha. It is not a charity, trust or NGO. What it does commit to is releasing its core tools for free under real open-source licenses.",
   },
   {
-    question: "Who owns the projects, and how are they licensed?",
+    question: "Who owns the products, and how are they licensed?",
     answer:
-      "The projects are published by Nexoral Systems on GitHub and released under OSI-approved licenses — MIT for most libraries and GPL-3.0 for the larger tools. You can use, self-host, and modify them under those terms.",
+      "The products are published by Nexoral Systems on GitHub and released under OSI-approved licenses (MIT for most libraries, GPL-3.0 for the larger tools). You can use, self-host and modify them under those terms.",
   },
   {
     question: "How is the work funded?",
     answer:
-      "The work is currently funded by the maintainer and by sponsorship. The goal is to fund ongoing maintenance through GitHub Sponsors and open-source grants — never by locking core features behind a paywall.",
+      "The work is currently self-funded and supported by sponsorship. The goal is to cover ongoing maintenance through GitHub Sponsors and open-source grants, never by locking core features behind a paywall.",
   },
   {
     question: "Who maintains the projects?",
@@ -61,131 +66,105 @@ export default function AboutPage() {
         data={[
           breadcrumbSchema([
             { name: "Home", url: SITE_CONFIG.url },
-            { name: "About", url: `${SITE_CONFIG.url}/about` },
+            { name: "Company", url: `${SITE_CONFIG.url}/about` },
           ]),
           faqSchema(faqs),
         ]}
       />
 
-      <Section className="pt-20 sm:pt-24">
-        <SectionHeading
-          eyebrow="About"
-          title="An independent studio for free, open-source infrastructure"
-          description="Nexoral Systems builds software that people and small teams can run themselves — without a licence fee, a sales call, or a cloud account they cannot leave."
+      <Section className="pt-16 sm:pt-20 lg:pt-24">
+        <PageTitle
+          title="An independent company, owned by one person."
+          description={`${SITE_CONFIG.name} builds software that people and small teams can run themselves, without a licence fee, a sales call, or a cloud account they cannot leave.`}
         />
-        <p className="max-w-3xl text-base leading-relaxed text-muted-foreground">
-          We focus on problems that are easy to describe and annoying to solve: taking control of a
-          local network&apos;s DNS, embedding a database inside a Node.js app, deploying databases
-          and building Linux packages without ceremony. Everything we ship is open source and free
-          to use.
+        <p className="mt-6 max-w-[30rem] text-[0.95rem] leading-relaxed text-muted-foreground">
+          The focus is on problems that are easy to describe and annoying to solve: adding a
+          database to a Node.js app without a native build step, taking control of a local
+          network&apos;s DNS, deploying databases, and building Linux packages without ceremony.
+          Everything published here is open source and free to use.
         </p>
       </Section>
 
-      <Section bordered>
-        <SectionHeading eyebrow="Who it is for" title="Built for people who run their own stack" />
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            { title: "Developers", body: "Tools you can drop into a project and reason about." },
-            { title: "Small businesses", body: "Self-hosted software without per-seat pricing." },
-            { title: "Home networks", body: "Ad blocking and DNS control that stays on your LAN." },
-            { title: "Schools & learners", body: "Inclusive tooling, including Bengali-language coding." },
-          ].map((item) => (
-            <Card key={item.title} className="bg-card/50">
-              <CardContent className="pt-6">
-                <h3 className="font-medium">{item.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.body}</p>
-              </CardContent>
-            </Card>
+      <Section divider>
+        <SectionHeading title="Who it is for" className="max-w-xl" />
+        <div className="mt-10 grid gap-x-16 gap-y-9 sm:grid-cols-2">
+          {audiences.map((item) => (
+            <div key={item.title}>
+              <h3 className="font-heading text-lg font-medium tracking-tight">{item.title}</h3>
+              <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
+                {item.body}
+              </p>
+            </div>
           ))}
         </div>
       </Section>
 
-      <Section bordered>
-        <div className="grid gap-10 lg:grid-cols-2">
+      <Section divider tone="panel">
+        <div className="grid gap-12 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
           <div>
             <SectionHeading
-              eyebrow="Transparency"
-              title="How Nexoral is registered and run"
-              description="We would rather state the facts plainly than sound bigger than we are."
+              title="How the company is run"
+              description="Nexoral is deliberately small. One owner makes the decisions, the source is public, and there is no gap between who builds the software and who answers for it."
+              className="max-w-xl"
             />
-            <p className="text-sm leading-relaxed text-muted-foreground">
-              Nexoral Systems is a micro-enterprise registered under Udyam with the Government of
-              India, operating in the services category. It is an independent organisation and is
-              not affiliated with any other company. The projects are maintained in public on
-              GitHub.
-            </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Button variant="outline" render={<Link href="/support" />}>
+            <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
+              <Link
+                href="/founder"
+                className="text-sm font-medium text-primary underline decoration-primary/30 underline-offset-4 transition-colors hover:decoration-primary"
+              >
+                About the owner
+              </Link>
+              <Link
+                href="/support"
+                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
                 Funding & support
-              </Button>
-              <Button variant="outline" render={<Link href="/license" />}>
+              </Link>
+              <Link
+                href="/license"
+                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
                 Licenses
-              </Button>
+              </Link>
             </div>
           </div>
 
-          <Card className="bg-card/50">
-            <CardContent className="space-y-4 pt-6 text-sm">
-              <div className="flex justify-between gap-4">
-                <span className="text-muted-foreground">Legal enterprise</span>
-                <span className="text-right font-medium">{ORG_DETAILS.legalName}</span>
+          <dl className="divide-y divide-border border-y border-border">
+            {[
+              { term: "Company", value: COMPANY.legalName },
+              { term: "Owner", value: COMPANY.owner },
+              { term: "Founded", value: COMPANY.foundedLabel },
+              { term: "Based in", value: COMPANY.location },
+              { term: "Contact", value: CONTACT.general },
+            ].map((row) => (
+              <div key={row.term} className="flex items-baseline justify-between gap-6 py-4">
+                <dt className="text-sm text-muted-foreground">{row.term}</dt>
+                <dd className="text-right text-sm font-medium">{row.value}</dd>
               </div>
-              <div className="flex justify-between gap-4">
-                <span className="text-muted-foreground">Enterprise type</span>
-                <span className="text-right font-medium">{ORG_DETAILS.enterpriseType}</span>
-              </div>
-              <div className="flex justify-between gap-4">
-                <span className="text-muted-foreground">Udyam number</span>
-                <span className="text-right font-mono text-xs font-medium">
-                  {ORG_DETAILS.udyamNumber}
-                </span>
-              </div>
-              <div className="flex justify-between gap-4">
-                <span className="text-muted-foreground">NIC codes</span>
-                <span className="text-right font-medium">{ORG_DETAILS.nic.join(", ")}</span>
-              </div>
-              <div className="flex justify-between gap-4">
-                <span className="text-muted-foreground">Registered</span>
-                <span className="text-right font-medium">
-                  {ORG_DETAILS.address.locality}, {ORG_DETAILS.address.region}{" "}
-                  {ORG_DETAILS.address.postalCode}, {ORG_DETAILS.address.countryName}
-                </span>
-              </div>
-              <div className="flex justify-between gap-4">
-                <span className="text-muted-foreground">Incorporated</span>
-                <span className="text-right font-medium">{ORG_DETAILS.incorporationLabel}</span>
-              </div>
-              <div className="flex justify-between gap-4">
-                <span className="text-muted-foreground">Contact</span>
-                <span className="text-right font-medium">{CONTACT.general}</span>
-              </div>
-            </CardContent>
-          </Card>
+            ))}
+          </dl>
         </div>
       </Section>
 
-      <Section bordered>
-        <SectionHeading eyebrow="Roadmap" title="Where the work is going" />
-        <ul className="grid gap-4 sm:grid-cols-2">
+      <Section divider>
+        <SectionHeading title="Where the work is going" className="max-w-xl" />
+        <ul className="mt-8 grid gap-x-16 gap-y-4 sm:grid-cols-2">
           {[
-            "Harden and document the flagship tools (DNS, database, deployment).",
-            "Grow the contributor base and cut the time to first contribution.",
+            "Harden and document the flagship tools: database, DNS and deployment.",
+            "Grow the contributor base and shorten the path to a first contribution.",
             "Expand Bengali-language programming for regional education.",
             "Reach sustainable funding through sponsorship and grants.",
           ].map((item) => (
-            <li
-              key={item}
-              className="rounded-lg border border-border bg-card/50 p-4 text-sm text-muted-foreground"
-            >
+            <li key={item} className="border-t border-border pt-4 text-sm leading-relaxed text-muted-foreground">
               {item}
             </li>
           ))}
         </ul>
       </Section>
 
-      <Section bordered>
-        <SectionHeading eyebrow="FAQ" title="Common questions" />
-        <Accordion className="max-w-3xl">
+      <Section divider>
+        <SectionHeading title="Common questions" className="max-w-xl" />
+        <Accordion className="mt-8 max-w-3xl">
           {faqs.map((faq) => (
             <AccordionItem key={faq.question}>
               <AccordionTrigger>{faq.question}</AccordionTrigger>

@@ -1,123 +1,80 @@
 import Link from "next/link";
-import Image from "next/image";
-import { CONTACT, ORG_DETAILS, SITE_CONFIG, SOCIALS } from "@/lib/constants";
+import { COMPANY, COMPLIANCE, CONTACT, FOOTER_LINKS, SITE_CONFIG, SOCIALS } from "@/lib/constants";
+import { NexoralMark, Wordmark } from "@/components/site/mark";
 
-const resourceLinks = [
-  { href: "/projects", label: "Projects" },
-  { href: "/about", label: "About" },
-  { href: "/support", label: "Support & funding" },
-  { href: "/contact", label: "Contact" },
-  { href: "/license", label: "Licenses" },
-  { href: "/privacy", label: "Privacy" },
+const columns = [
+  { heading: "Products", links: FOOTER_LINKS.products },
+  { heading: "Company", links: FOOTER_LINKS.company },
+  { heading: "Legal", links: FOOTER_LINKS.legal },
 ];
 
 export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="w-full border-t border-border px-4 py-14 sm:px-6 lg:px-10 xl:px-16">
-      <div className="mx-auto grid w-full max-w-[1600px] gap-10 md:grid-cols-2 lg:grid-cols-4">
-        <div className="lg:col-span-2">
-          <Link href="/" className="flex items-center gap-2.5">
-            <Image
-              src="/logo.jpg"
-              alt=""
-              width={32}
-              height={32}
-              className="size-8 rounded-lg object-cover"
-            />
-            <span className="text-base font-semibold tracking-tight">{SITE_CONFIG.name}</span>
-          </Link>
-          <p className="mt-4 max-w-md text-sm leading-relaxed text-muted-foreground">
-            {SITE_CONFIG.description}
-          </p>
-          <dl className="mt-6 space-y-1 text-xs text-muted-foreground">
-            <div className="flex flex-wrap gap-x-2">
-              <dt className="font-medium text-foreground/80">Enterprise</dt>
-              <dd>
-                {ORG_DETAILS.legalName} · {ORG_DETAILS.enterpriseType}
-              </dd>
-            </div>
-            <div className="flex flex-wrap gap-x-2">
-              <dt className="font-medium text-foreground/80">Udyam No.</dt>
-              <dd>{ORG_DETAILS.udyamNumber}</dd>
-            </div>
-            <div className="flex flex-wrap gap-x-2">
-              <dt className="font-medium text-foreground/80">Registered</dt>
-              <dd>
-                {ORG_DETAILS.address.locality}, {ORG_DETAILS.address.region}{" "}
-                {ORG_DETAILS.address.postalCode}, {ORG_DETAILS.address.countryName}
-              </dd>
-            </div>
-          </dl>
-        </div>
+    <footer className="w-full border-t border-border bg-card">
+      <div className="shell py-14 lg:py-16">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1fr]">
+          <div>
+            <Link href="/" className="flex items-center gap-2.5" aria-label={`${SITE_CONFIG.name} — home`}>
+              <NexoralMark className="size-[1.4rem] text-primary" />
+              <Wordmark />
+            </Link>
+            <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">
+              An independent software company, owned and run by {COMPANY.owner}. It publishes free,
+              open-source infrastructure and developer tools.
+            </p>
+            <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+              {[
+                { href: SOCIALS.github, label: "GitHub", external: true },
+                { href: SOCIALS.sponsor, label: "Sponsor", external: true },
+                { href: `mailto:${CONTACT.general}`, label: CONTACT.general, external: false },
+              ].map((item) => (
+                <li key={item.label}>
+                  <a
+                    href={item.href}
+                    {...(item.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                    className="text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-        <nav aria-label="Footer" className="text-sm">
-          <h2 className="mb-4 font-medium text-foreground">Explore</h2>
-          <ul className="space-y-3">
-            {resourceLinks.map((link) => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className="text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        <div className="text-sm">
-          <h2 className="mb-4 font-medium text-foreground">Connect</h2>
-          <ul className="space-y-3">
-            <li>
-              <a
-                href={SOCIALS.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground transition-colors hover:text-foreground"
-              >
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a
-                href={SOCIALS.sponsor}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground transition-colors hover:text-foreground"
-              >
-                Sponsor
-              </a>
-            </li>
-            <li>
-              <a
-                href={`mailto:${CONTACT.general}`}
-                className="text-muted-foreground transition-colors hover:text-foreground"
-              >
-                {CONTACT.general}
-              </a>
-            </li>
-            <li>
-              <a
-                href={`mailto:${CONTACT.founder}`}
-                className="text-muted-foreground transition-colors hover:text-foreground"
-              >
-                {CONTACT.founder}
-              </a>
-            </li>
-          </ul>
+          {columns.map((column) => (
+            <nav key={column.heading} aria-label={column.heading}>
+              <h2 className="text-sm font-medium text-foreground">{column.heading}</h2>
+              <ul className="mt-4 space-y-2.5 text-sm">
+                {column.links.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ))}
         </div>
       </div>
 
-      <div className="mx-auto mt-12 flex w-full max-w-[1600px] flex-col gap-3 border-t border-border pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-        <p>
-          © {year} {SITE_CONFIG.name}. Independent and not affiliated with any other company.
-        </p>
-        <p>
-          Core tools are free and open source — supported by sponsorship and grants, not paywalls.
-        </p>
+      <div className="border-t border-border">
+        <div className="shell flex flex-col gap-3 py-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+          <p>
+            © {year} {SITE_CONFIG.name}. Owned and maintained by {COMPANY.owner}.
+          </p>
+          <p className="sm:text-right">
+            Free and open source — funded by sponsorship, not paywalls. Grievances:{" "}
+            <a href={`mailto:${COMPLIANCE.email}`} className="text-foreground/80 hover:text-foreground">
+              {COMPLIANCE.email}
+            </a>
+          </p>
+        </div>
       </div>
     </footer>
   );

@@ -1,4 +1,4 @@
-import { CONTACT, ORG_DETAILS, SITE_CONFIG, SOCIALS } from "@/lib/constants";
+import { COMPANY, CONTACT, SITE_CONFIG, SOCIALS } from "@/lib/constants";
 
 type SchemaObject = Record<string, unknown>;
 
@@ -11,9 +11,14 @@ export function organizationSchema(): SchemaObject {
     url: SITE_CONFIG.url,
     logo: `${SITE_CONFIG.url}/logo.jpg`,
     description: SITE_CONFIG.description,
-    foundingDate: ORG_DETAILS.incorporationDate,
-    identifier: ORG_DETAILS.udyamNumber,
+    foundingDate: COMPANY.foundedDate,
     email: CONTACT.general,
+    owner: {
+      "@type": "Person",
+      name: COMPANY.owner,
+      url: SITE_CONFIG.founder.url,
+      sameAs: SITE_CONFIG.founder.github,
+    },
     founder: {
       "@type": "Person",
       name: SITE_CONFIG.founder.name,
@@ -22,10 +27,9 @@ export function organizationSchema(): SchemaObject {
     },
     address: {
       "@type": "PostalAddress",
-      addressLocality: ORG_DETAILS.address.locality,
-      addressRegion: ORG_DETAILS.address.region,
-      postalCode: ORG_DETAILS.address.postalCode,
-      addressCountry: ORG_DETAILS.address.country,
+      addressLocality: "Kolkata",
+      addressRegion: "West Bengal",
+      addressCountry: COMPANY.countryCode,
     },
     sameAs: [SOCIALS.github, SOCIALS.x, SOCIALS.linkedin, SOCIALS.devto],
   };

@@ -39,12 +39,12 @@ export const LANGUAGE_COLORS: Record<string, string> = {
 };
 
 export const CHART_COLORS = {
-  primary: "#4f83f1",
-  secondary: "#31c0c0",
-  tertiary: "#8fb339",
-  quaternary: "#e0a03a",
-  quinary: "#e05a4a",
-  senary: "#06b6d4",
+  primary: "#2450d6",
+  secondary: "#1f6f66",
+  tertiary: "#7d6a1f",
+  quaternary: "#8a4a24",
+  quinary: "#5b3f8f",
+  senary: "#0f6f8a",
 };
 
 export const DEFAULTS = {
@@ -72,37 +72,51 @@ export const SITE_CONFIG = {
   name: "Nexoral Systems",
   shortName: "Nexoral",
   url: "https://nexoral.in",
-  tagline: "Free and open-source infrastructure tools",
+  tagline: "Open-source software you can run yourself",
   description:
-    "Nexoral Systems is an independent, Udyam-registered software micro-enterprise from West Bengal, India, building free and open-source infrastructure tools — DNS, databases, deployment and packaging — for developers, small businesses, and home networks.",
+    "Nexoral Systems is an independent software company owned and run by Ankan Saha. It builds free, open-source infrastructure and developer tools — led by AxioDB, the embedded database for Node.js.",
   orgGitHub: `https://github.com/${GITHUB_ORG}`,
   founder: {
     name: "Ankan Saha",
-    role: "Founder & Lead Maintainer",
+    role: "Owner & lead maintainer",
     url: "https://ankan.in",
     github: "https://github.com/AnkanSaha",
   },
 };
 
-export const ORG_DETAILS = {
+export const COMPANY = {
   legalName: "Nexoral Systems",
-  enterpriseType: "Micro enterprise (Services)",
-  udyamNumber: "UDYAM-WB-15-0112388",
-  incorporationDate: "2026-02-10",
-  incorporationLabel: "10 February 2026",
-  nic: ["62011", "62020", "63999"],
-  address: {
-    locality: "Ranaghat",
-    region: "West Bengal",
-    postalCode: "741504",
-    country: "IN",
-    countryName: "India",
-  },
+  owner: "Ankan Saha",
+  ownerRole: "Owner & lead maintainer",
+  foundedDate: "2025-09-03",
+  foundedLabel: "2025",
+  location: "Kolkata, West Bengal, India",
+  country: "India",
+  countryCode: "IN",
+  orgDescription:
+    "Nexoral Systems is an open-source driven technology organization focused on building next-generation infrastructure and developer tools.",
 };
 
 export const CONTACT = {
   general: "support@nexoral.in",
   founder: "connect@ankan.in",
+};
+
+/**
+ * DPDPA (Digital Personal Data Protection Act, 2023) compliance details.
+ * These are published so Data Principals can exercise their rights and raise
+ * grievances under Sections 11–14 and Rule 14 of the DPDP Rules, 2025.
+ */
+export const COMPLIANCE = {
+  noticeVersion: "1.0",
+  noticeEffective: "8 October 2026",
+  officerName: "Ankan Saha",
+  officerRole: "Grievance Officer & data protection contact",
+  email: CONTACT.general,
+  responseSlaDays: 90,
+  boardName: "Data Protection Board of India",
+  ministryName: "Ministry of Electronics and Information Technology, Government of India",
+  ministryUrl: "https://www.meity.gov.in/",
 };
 
 export const SOCIALS = {
@@ -117,8 +131,26 @@ export const SOCIALS = {
 };
 
 export const NAV_LINKS = [
-  { href: "/projects", label: "Projects" },
-  { href: "/about", label: "About" },
-  { href: "/founder", label: "Founder" },
+  { href: "/projects", label: "Products" },
+  { href: "/about", label: "Company" },
+  { href: "/founder", label: "Owner" },
   { href: "/support", label: "Support" },
 ];
+
+export const FOOTER_LINKS = {
+  products: [
+    { href: "/projects", label: "All products" },
+    { href: "/license", label: "Licenses" },
+  ],
+  company: [
+    { href: "/about", label: "About" },
+    { href: "/founder", label: "Owner" },
+    { href: "/support", label: "Support & funding" },
+    { href: "/contact", label: "Contact" },
+  ],
+  legal: [
+    { href: "/privacy", label: "Privacy notice" },
+    { href: "/terms", label: "Terms of use" },
+    { href: "/data-protection", label: "Data protection & grievance" },
+  ],
+};

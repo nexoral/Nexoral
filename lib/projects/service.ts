@@ -28,7 +28,10 @@ export interface ProjectView {
   category: ProjectCategory;
   categoryLabel: string;
   featured: boolean;
+  flagship: boolean;
   order: number;
+  summary: string;
+  distribution: string;
   docsUrl?: string;
   liveUrl?: string;
   npm: NpmDownloads | null;
@@ -63,7 +66,10 @@ function withCatalog(project: Project, npm: NpmDownloads | null): ProjectView {
     category,
     categoryLabel: CATEGORY_LABELS[category],
     featured: entry?.featured ?? false,
+    flagship: entry?.flagship ?? false,
     order: entry?.order ?? 999,
+    summary: entry?.summary ?? project.description,
+    distribution: entry?.distribution ?? "Source",
     docsUrl: entry?.docsUrl,
     liveUrl: entry?.liveUrl,
     npm,
@@ -97,6 +103,11 @@ export async function getProjectsByCategory(): Promise<
     label: CATEGORY_LABELS[category],
     projects: projects.filter((project) => project.category === category),
   })).filter((group) => group.projects.length > 0);
+}
+
+export async function getFlagshipProject(): Promise<ProjectView | null> {
+  const projects = await getProjectViews();
+  return projects.find((project) => project.flagship) ?? projects[0] ?? null;
 }
 
 export async function getProjectDetailBySlug(slug: string): Promise<ProjectDetailView | null> {
