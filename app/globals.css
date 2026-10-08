@@ -40,6 +40,10 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-glass: var(--glass-tint);
+  --color-glass-strong: var(--glass-tint-strong);
+  --color-glass-border: var(--glass-border);
+  --shadow-glass: var(--glass-shadow);
   --radius-sm: calc(var(--radius) * 0.625);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -81,6 +85,20 @@
   --chart-3: #7d6a1f;
   --chart-4: #8a4a24;
   --chart-5: #5b3f8f;
+
+  /* Glass system — translucent surfaces that blur the ambient layer behind them. */
+  --glass-tint: color-mix(in oklab, var(--card) 58%, transparent);
+  --glass-tint-strong: color-mix(in oklab, var(--card) 82%, transparent);
+  --glass-border: color-mix(in oklab, var(--foreground) 12%, transparent);
+  --glass-highlight: color-mix(in oklab, #ffffff 60%, transparent);
+  --glass-blur: 16px;
+  --glass-shadow:
+    0 1px 2px rgb(23 25 28 / 0.05), 0 14px 36px -14px rgb(23 25 28 / 0.22);
+
+  /* Ambient background glows, tinted toward the brand hue — kept subtle. */
+  --ambient-primary: color-mix(in oklab, var(--primary) 22%, transparent);
+  --ambient-secondary: color-mix(in oklab, var(--chart-2) 15%, transparent);
+  --ambient-grid: color-mix(in oklab, var(--foreground) 4%, transparent);
 
   --radius: 0.5rem;
 
@@ -125,6 +143,16 @@
   --chart-4: #cf8455;
   --chart-5: #a98ada;
 
+  --glass-tint: color-mix(in oklab, var(--card) 55%, transparent);
+  --glass-tint-strong: color-mix(in oklab, var(--card) 82%, transparent);
+  --glass-border: color-mix(in oklab, #ffffff 14%, transparent);
+  --glass-highlight: color-mix(in oklab, #ffffff 8%, transparent);
+  --glass-shadow:
+    0 1px 2px rgb(0 0 0 / 0.4), 0 16px 40px -16px rgb(0 0 0 / 0.6);
+  --ambient-primary: color-mix(in oklab, var(--primary) 20%, transparent);
+  --ambient-secondary: color-mix(in oklab, var(--chart-2) 16%, transparent);
+  --ambient-grid: color-mix(in oklab, #ffffff 5%, transparent);
+
   --sidebar: #1a1d21;
   --sidebar-foreground: #eef0ec;
   --sidebar-primary: #8095ef;
@@ -140,14 +168,14 @@
     @apply border-border outline-ring/50;
   }
   html {
-    @apply font-sans;
+    @apply bg-background font-sans;
     color-scheme: light;
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
     text-underline-offset: 0.2em;
   }
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply text-foreground antialiased;
     font-feature-settings: "cv05" 1, "cv08" 1;
   }
   ::selection {
@@ -179,6 +207,95 @@
   @media (min-width: 1536px) {
     .shell {
       padding-inline: 4.5rem;
+    }
+  }
+
+  /* ---------------------------------------------------------------------------
+     Glass surfaces. Glass only reads as glass when there is something behind it
+     to blur, so every glass element sits above the ambient layer. Keep surfaces
+     flat — never nest one glass surface inside another.
+  --------------------------------------------------------------------------- */
+  .glass {
+    background: var(--glass-tint);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
+    backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
+    border: 1px solid var(--glass-border);
+    box-shadow:
+      var(--glass-shadow),
+      inset 0 1px 0 var(--glass-highlight);
+  }
+
+  .glass-strong {
+    background: var(--glass-tint-strong);
+  }
+
+  .glass-hover {
+    transition:
+      transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 0.25s ease;
+  }
+  .glass-hover:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 2px 4px rgb(23 25 28 / 0.06),
+      0 22px 48px -18px rgb(23 25 28 / 0.28),
+      inset 0 1px 0 var(--glass-highlight);
+  }
+
+  @media (max-width: 640px) {
+    .glass {
+      --glass-blur: 12px;
+    }
+  }
+
+  /* Engines without backdrop-filter fall back to an opaque card. */
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass,
+    .glass-strong {
+      background: var(--card);
+    }
+  }
+
+  /* ---------------------------------------------------------------------------
+     Ambient background — purely decorative, fixed behind all content.
+  --------------------------------------------------------------------------- */
+  .ambient {
+    position: fixed;
+    inset: 0;
+    z-index: -10;
+    overflow: hidden;
+    pointer-events: none;
+    background-color: var(--background);
+  }
+  .ambient::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(to right, var(--ambient-grid) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--ambient-grid) 1px, transparent 1px);
+    background-size: 34px 34px;
+    -webkit-mask-image: radial-gradient(125% 95% at 50% 0%, #000 28%, transparent 82%);
+    mask-image: radial-gradient(125% 95% at 50% 0%, #000 28%, transparent 82%);
+  }
+  .ambient::after {
+    content: "";
+    position: absolute;
+    inset: -25% -10% auto -10%;
+    height: 130%;
+    background-image:
+      radial-gradient(46% 42% at 12% 6%, var(--ambient-primary), transparent 68%),
+      radial-gradient(38% 36% at 88% 12%, var(--ambient-secondary), transparent 70%);
+    filter: blur(8px);
+    animation: ambient-drift 90s ease-in-out infinite alternate;
+  }
+  @keyframes ambient-drift {
+    from {
+      transform: translate3d(-1.5%, 0, 0) scale(1);
+    }
+    to {
+      transform: translate3d(1.5%, 1.5%, 0) scale(1.06);
     }
   }
 
@@ -247,5 +364,8 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+  .glass-hover:hover {
+    transform: none;
   }
 }

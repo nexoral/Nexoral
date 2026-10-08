@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Section, SectionHeading } from "@/components/layout/section";
+import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { FactStrip } from "@/components/site/stat";
 import { ProductCatalogue } from "@/components/site/product-row";
 import { CodeBlock } from "@/components/site/code-block";
@@ -65,7 +66,7 @@ export default async function Home() {
     <>
       <Section className="pt-16 sm:pt-20 lg:pt-24">
         <div className="grid gap-12 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:gap-16">
-          <div>
+          <Reveal pop>
             <p className="font-mono text-[12px] text-muted-foreground">
               Independent software company · Open source since {COMPANY.foundedLabel}
             </p>
@@ -89,10 +90,10 @@ export default async function Home() {
                 View the source on GitHub
               </a>
             </div>
-          </div>
+          </Reveal>
 
           {flagship ? (
-            <div>
+            <Reveal delay={0.12}>
               <CodeBlock code={flagshipCode} title="app.ts" meta={`${flagship.name} / npm`} />
               <div className="mt-3 flex flex-wrap items-baseline justify-between gap-2 font-mono text-[11.5px] text-muted-foreground">
                 <Link
@@ -103,19 +104,20 @@ export default async function Home() {
                 </Link>
                 {flagship.npm ? <span>{formatCompact(flagship.npm.lastMonth)}/mo</span> : null}
               </div>
-            </div>
+            </Reveal>
           ) : null}
         </div>
 
-        <FactStrip
-          className="mt-16 sm:mt-20"
-          facts={[
-            { value: formatNumber(stats.totalProjects), label: "Open-source products" },
-            { value: formatNumber(stats.totalStars), label: "GitHub stars" },
-            { value: formatCompact(stats.totalNpmYear), label: "npm downloads / year" },
-            { value: "MIT · GPL-3.0", label: "Licenses used" },
-          ]}
-        />
+        <Reveal className="mt-16 sm:mt-20">
+          <FactStrip
+            facts={[
+              { value: formatNumber(stats.totalProjects), label: "Open-source products" },
+              { value: formatNumber(stats.totalStars), label: "GitHub stars" },
+              { value: formatCompact(stats.totalNpmYear), label: "npm downloads / year" },
+              { value: "MIT · GPL-3.0", label: "Licenses used" },
+            ]}
+          />
+        </Reveal>
       </Section>
 
       <Section divider>
@@ -145,16 +147,16 @@ export default async function Home() {
           description="The same four commitments apply to everything published under the Nexoral name."
           className="max-w-xl"
         />
-        <div className="mt-10 grid gap-x-16 gap-y-9 sm:grid-cols-2">
-          {principles.map((principle) => (
-            <div key={principle.title}>
+        <Stagger className="mt-10 grid gap-x-16 gap-y-9 sm:grid-cols-2">
+          {principles.map((principle, index) => (
+            <StaggerItem key={principle.title} index={index}>
               <h3 className="font-heading text-lg font-medium tracking-tight">{principle.title}</h3>
               <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
                 {principle.body}
               </p>
-            </div>
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
       </Section>
 
       <Section divider>
@@ -181,24 +183,26 @@ export default async function Home() {
             </div>
           </div>
 
-          <dl className="divide-y divide-border border-y border-border">
-            {[
-              { term: "Owner", value: COMPANY.owner },
-              { term: "Founded", value: COMPANY.foundedLabel },
-              { term: "Based in", value: COMPANY.location },
-              { term: "Contact", value: CONTACT.general },
-            ].map((row) => (
-              <div key={row.term} className="flex items-baseline justify-between gap-6 py-4">
-                <dt className="text-sm text-muted-foreground">{row.term}</dt>
-                <dd className="text-right text-sm font-medium">{row.value}</dd>
-              </div>
-            ))}
-          </dl>
+          <Reveal delay={0.1}>
+            <dl className="divide-y divide-border border-y border-border">
+              {[
+                { term: "Owner", value: COMPANY.owner },
+                { term: "Founded", value: COMPANY.foundedLabel },
+                { term: "Based in", value: COMPANY.location },
+                { term: "Contact", value: CONTACT.general },
+              ].map((row) => (
+                <div key={row.term} className="flex items-baseline justify-between gap-6 py-4">
+                  <dt className="text-sm text-muted-foreground">{row.term}</dt>
+                  <dd className="text-right text-sm font-medium">{row.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </Reveal>
         </div>
       </Section>
 
       <Section divider>
-        <div className="flex flex-col items-start justify-between gap-6 border border-border bg-card p-8 sm:p-10 lg:flex-row lg:items-center">
+        <Reveal className="glass flex flex-col items-start justify-between gap-6 p-8 sm:p-10 lg:flex-row lg:items-center">
           <div>
             <h2 className="font-heading text-2xl font-medium tracking-tight sm:text-[1.75rem]">
               Keep the tools free
@@ -214,7 +218,7 @@ export default async function Home() {
           >
             Sponsor on GitHub
           </Button>
-        </div>
+        </Reveal>
       </Section>
     </>
   );

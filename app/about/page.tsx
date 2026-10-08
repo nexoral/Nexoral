@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageTitle, Section, SectionHeading } from "@/components/layout/section";
+import { Stagger, StaggerItem } from "@/components/motion/reveal";
 import {
   Accordion,
   AccordionContent,
@@ -87,16 +88,16 @@ export default function AboutPage() {
 
       <Section divider>
         <SectionHeading title="Who it is for" className="max-w-xl" />
-        <div className="mt-10 grid gap-x-16 gap-y-9 sm:grid-cols-2">
-          {audiences.map((item) => (
-            <div key={item.title}>
+        <Stagger className="mt-10 grid gap-x-16 gap-y-9 sm:grid-cols-2">
+          {audiences.map((item, index) => (
+            <StaggerItem key={item.title} index={index}>
               <h3 className="font-heading text-lg font-medium tracking-tight">{item.title}</h3>
               <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
                 {item.body}
               </p>
-            </div>
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
       </Section>
 
       <Section divider tone="panel">

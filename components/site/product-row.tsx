@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ProjectView } from "@/lib/projects/service";
 import { formatCompact } from "@/lib/npm/fetchers";
 import { formatNumber } from "@/lib/format";
+import { Stagger, StaggerItem } from "@/components/motion/reveal";
 
 /**
  * One line of the product catalogue. Structure carries the information:
@@ -11,7 +12,7 @@ export function ProductRow({ project }: { project: ProjectView }) {
   return (
     <Link
       href={`/projects/${project.slug}`}
-      className="group -mx-3 grid gap-4 rounded-md border-t border-border px-3 py-7 transition-colors hover:bg-card lg:grid-cols-[minmax(0,1fr)_15rem] lg:gap-12"
+      className="group -mx-3 grid gap-4 rounded-md border-t border-border px-3 py-7 transition-colors hover:bg-glass lg:grid-cols-[minmax(0,1fr)_15rem] lg:gap-12"
     >
       <div>
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
@@ -40,10 +41,12 @@ export function ProductRow({ project }: { project: ProjectView }) {
 
 export function ProductCatalogue({ projects }: { projects: ProjectView[] }) {
   return (
-    <div className="border-b border-border">
-      {projects.map((project) => (
-        <ProductRow key={project.slug} project={project} />
+    <Stagger className="border-b border-border">
+      {projects.map((project, index) => (
+        <StaggerItem key={project.slug} index={index}>
+          <ProductRow project={project} />
+        </StaggerItem>
       ))}
-    </div>
+    </Stagger>
   );
 }

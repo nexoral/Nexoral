@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ExternalLink } from "lucide-react";
 import { GithubIcon } from "@/components/site/icons";
 import { Section } from "@/components/layout/section";
+import { Reveal } from "@/components/motion/reveal";
 import { ReadmeViewer } from "@/components/project/readme-viewer";
 import { CodeBlock } from "@/components/site/code-block";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -90,7 +91,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
           <span className="text-foreground">{project.name}</span>
         </nav>
 
-        <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+        <Reveal pop className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
             <p className="font-mono text-[12px] text-muted-foreground">{project.categoryLabel}</p>
             <h1 className="mt-3 font-heading text-[2.2rem] leading-[1.05] font-medium tracking-[-0.02em] text-balance sm:text-[3rem]">
@@ -130,9 +131,10 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
               </Button>
             ) : null}
           </div>
-        </div>
+        </Reveal>
 
-        <dl className="mt-12 grid grid-cols-2 gap-x-6 gap-y-8 border-y border-border py-8 sm:grid-cols-4">
+        <Reveal delay={0.1}>
+          <dl className="mt-12 grid grid-cols-2 gap-x-6 gap-y-8 border-y border-border py-8 sm:grid-cols-4">
           {[
             { term: "Stars", value: formatNumber(project.stars) },
             { term: "Forks", value: formatNumber(project.forks) },
@@ -150,6 +152,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
             </div>
           ))}
         </dl>
+        </Reveal>
 
         <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-[11.5px] text-muted-foreground">
           <span>{project.language ?? "N/A"}</span>

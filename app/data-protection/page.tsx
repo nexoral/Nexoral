@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageTitle, Section } from "@/components/layout/section";
+import { Stagger, StaggerItem } from "@/components/motion/reveal";
 import { COMPANY, COMPLIANCE } from "@/lib/constants";
 
 export const metadata: Metadata = {
@@ -90,16 +91,16 @@ export default function DataProtectionPage() {
 
       <Section divider>
         <h2 className="font-heading text-xl font-medium tracking-tight">Your rights</h2>
-        <div className="mt-8 grid gap-x-16 gap-y-8 sm:grid-cols-2">
-          {rights.map((right) => (
-            <div key={right.name} className="border-t border-border pt-4">
+        <Stagger className="mt-8 grid gap-x-16 gap-y-8 sm:grid-cols-2">
+          {rights.map((right, index) => (
+            <StaggerItem key={right.name} index={index} className="border-t border-border pt-4">
               <h3 className="text-sm font-medium">{right.name}</h3>
               <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
                 {right.body}
               </p>
-            </div>
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
       </Section>
 
       <Section divider>

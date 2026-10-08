@@ -40,7 +40,7 @@ export function MobileNav() {
       {open ? (
         <div
           id="mobile-menu"
-          className="fixed inset-x-0 top-14 bottom-0 z-40 flex flex-col border-t border-border bg-background px-5 py-6 sm:top-16"
+          className="glass glass-strong fixed inset-x-0 top-14 bottom-0 z-40 flex flex-col border-x-0 border-b-0 px-5 py-6 sm:top-16"
         >
           <nav className="flex flex-col" aria-label="Mobile">
             {NAV_LINKS.map((link) => (
