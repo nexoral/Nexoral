@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Check } from "lucide-react";
 import { Section, SectionHeading } from "@/components/layout/section";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { FactStrip } from "@/components/site/stat";
 import { ProductCatalogue } from "@/components/site/product-row";
-import { CodeBlock } from "@/components/site/code-block";
 import { Button } from "@/components/ui/button";
-import { getFlagshipProject, getOrgStats, getProjectViews } from "@/lib/projects/service";
+import { getOrgStats, getProjectViews } from "@/lib/projects/service";
 import { COMPANY, CONTACT, SITE_CONFIG, SOCIALS } from "@/lib/constants";
 import { formatCompact } from "@/lib/npm/fetchers";
 import { formatNumber } from "@/lib/format";
@@ -36,31 +36,27 @@ const principles = [
   },
 ];
 
-const flagshipCode = `// An embedded database, in-process. No server to run.
-import { AxioDB } from "axiodb";
-
-const db = new AxioDB({
-  path: "./data",
-  encryption: true,
-  encryptionKey: process.env.AXIODB_KEY,
-});
-
-await db.collection("orders").insert({
-  id: "1042",
-  total: 2499,
-  status: "paid",
-});
-
-const paid = await db.collection("orders").find({
-  status: "paid",
-});`;
+const operatingModel = [
+  {
+    title: "Independent",
+    body: "A software company, not a charity, trust or NGO.",
+  },
+  {
+    title: "Owner-run",
+    body: "Owned and run by one person, who answers for every decision.",
+  },
+  {
+    title: "Sponsor-funded",
+    body: "Kept free by sponsorship, never by paywalls or advertising.",
+  },
+  {
+    title: "Built in the open",
+    body: "Source, issues and decisions live in public on GitHub.",
+  },
+];
 
 export default async function Home() {
-  const [stats, projects, flagship] = await Promise.all([
-    getOrgStats(),
-    getProjectViews(),
-    getFlagshipProject(),
-  ]);
+  const [stats, projects] = await Promise.all([getOrgStats(), getProjectViews()]);
 
   return (
     <>
@@ -92,20 +88,33 @@ export default async function Home() {
             </div>
           </Reveal>
 
-          {flagship ? (
-            <Reveal delay={0.12}>
-              <CodeBlock code={flagshipCode} title="app.ts" meta={`${flagship.name} / npm`} />
-              <div className="mt-3 flex flex-wrap items-baseline justify-between gap-2 font-mono text-[11.5px] text-muted-foreground">
-                <Link
-                  href={`/projects/${flagship.slug}`}
-                  className="text-foreground transition-colors hover:text-primary"
-                >
-                  {flagship.name}: {flagship.summary.split(".")[0]}.
-                </Link>
-                {flagship.npm ? <span>{formatCompact(flagship.npm.lastMonth)}/mo</span> : null}
-              </div>
-            </Reveal>
-          ) : null}
+          <Reveal delay={0.12}>
+            <div className="glass rounded-2xl p-7 sm:p-9">
+              <p className="font-mono text-[12px] text-muted-foreground">How the company works</p>
+              <h2 className="mt-4 font-heading text-[1.6rem] leading-snug font-medium tracking-tight text-balance sm:text-[1.85rem]">
+                Owned, funded, and built in the open.
+              </h2>
+              <Stagger className="mt-7 space-y-4">
+                {operatingModel.map((item, index) => (
+                  <StaggerItem key={item.title} index={index} className="flex gap-3">
+                    <Check className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+                    <div>
+                      <p className="text-sm font-medium">{item.title}</p>
+                      <p className="mt-0.5 text-sm leading-relaxed text-muted-foreground">
+                        {item.body}
+                      </p>
+                    </div>
+                  </StaggerItem>
+                ))}
+              </Stagger>
+              <Link
+                href="/about"
+                className="mt-7 inline-flex text-sm font-medium text-primary underline decoration-primary/30 underline-offset-4 transition-colors hover:decoration-primary"
+              >
+                About the company
+              </Link>
+            </div>
+          </Reveal>
         </div>
 
         <Reveal className="mt-16 sm:mt-20">
